@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Project - M.CELADOOR</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            line-height: 1.6;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: #2E2E2E;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .page-title {
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-align: center;
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        .spacer {
+            width: 50px;
+        }
+
+        /* Project info */
+        .project-info {
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 2px;
+        }
+
+        .project-title {
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .project-description {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* Images container */
+        .images-container {
+            padding-bottom: 40px;
+        }
+
+        .image-item {
+            position: relative;
+            background: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .image-item img.loaded {
+            opacity: 1;
+        }
+
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #666;
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        .image-info {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.5);
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-filename {
+            opacity: 0.8;
+        }
+
+        .image-index {
+            opacity: 0.6;
+        }
+
+        /* Fullscreen viewer */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 1000;
+            display: none;
+            overflow: auto;
+        }
+
+        .image-viewer.active {
+            display: block;
+        }
+
+        .viewer-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .close-viewer {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            padding: 5px;
+        }
+
+        .viewer-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .viewer-nav button {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 8px 16px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .viewer-nav button:active {
+            background: white;
+            color: #000;
+        }
+
+        .viewer-nav button:disabled {
+            opacity: 0.3;
+        }
+
+        .viewer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-top: 60px;
+        }
+
+        /* Panoramic viewer for long images */
+        .panoramic-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .panoramic-image {
+            height: calc(100vh - 60px);
+            width: auto;
+            display: block;
+        }
+
+        .loading-more {
+            text-align: center;
+            padding: 40px;
+            font-size: 14px;
+            opacity: 0.6;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            padding: 40px;
+            text-align: center;
+        }
+
+        /* Statement/markdown content */
+        .project-statement {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 20px;
+        }
+
+        .project-statement h1,
+        .project-statement h2,
+        .project-statement h3 {
+            margin: 20px 0 10px 0;
+        }
+
+        .project-statement p {
+            margin-bottom: 15px;
+        }
+
+        .project-statement a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 400px) {
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .back-link {
+                font-size: 14px;
+            }
+            
+            .page-title {
+                font-size: 14px;
+            }
+
+            .project-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="m-images.html" class="back-link">← BACK</a>
+        <h1 class="page-title" id="headerTitle">PROJECT</h1>
+        <div class="spacer"></div>
+    </header>
+
+    <div class="project-info">
+        <h1 class="project-title" id="projectTitle">Loading...</h1>
+        <p class="project-description" id="projectDescription">Loading project information...</p>
+    </div>
+
+    <div class="project-statement" id="projectStatement" style="display: none;">
+        <!-- Markdown content loaded here -->
+    </div>
+
+    <div class="images-container" id="imagesContainer">
+        <div class="loading-more">Loading project images...</div>
+    </div>
+
+    <!-- Fullscreen Viewer -->
+    <div class="image-viewer" id="imageViewer">
+        <div class="viewer-header">
+            <div class="viewer-nav">
+                <button id="prevBtn" onclick="navigateImage(-1)">←</button>
+                <button id="nextBtn" onclick="navigateImage(1)">→</button>
+            </div>
+            <span id="viewerInfo"></span>
+            <a href="#" class="close-viewer" onclick="closeViewer(); return false;">×</a>
+        </div>
+        <div id="viewerContent"></div>
+    </div>
+
+    <script>
+        // Project configurations
+        const PROJECT_CONFIGS = {
+            'interlocutor': {
+                title: 'INTERLOCUTOR',
+                description: 'Generative exploration of communication barriers',
+                folder: 'interlocutor',
+                images: ['image001_interlocutor.AVIF', 'image002_interlocutor.AVIF']
+            },
+            'costanza': {
+                title: 'COSTANZA',
+                description: 'Patterns of constancy in digital flux',
+                folder: 'costanza',
+                images: ['image001_costanza.AVIF', 'image002_costanza.AVIF']
+            },
+            'nucleation': {
+                title: 'NUCLEATION',
+                description: 'Crystal formation in computational space',
+                folder: 'nucleation',
+                images: ['image001_nucleation.AVIF', 'image002_nucleation.AVIF']
+            },
+            'decay_poster': {
+                title: 'DECAY POSTER',
+                description: 'Visual entropy and degradation',
+                folder: 'decay_poster',
+                images: ['image001_decay_poster.AVIF']
+            },
+            'the_last_frame_of_the_day': {
+                title: 'THE LAST FRAME OF THE DAY',
+                description: 'Extended temporal capture',
+                folder: 'the_last_frame_of_the_day',
+                images: ['image001_the_last_frame_of_the_day.AVIF']
+            },
+            'panorama': {
+                title: 'PANORAMA',
+                description: 'Wide-format generative landscapes',
+                folder: 'panorama',
+                images: ['image001_panorama.AVIF', 'image002_panorama.AVIF']
+            }
+        };
+
+        let currentProject = null;
+        let projectImages = [];
+        let currentImageIndex = 0;
+
+        // Simple markdown parser
+        function parseMarkdown(md) {
+            let html = md;
+            
+            // Headers
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+            
+            // Bold and italic
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            
+            // Paragraphs
+            const lines = html.split('\n\n');
+            html = lines.map(line => {
+                line = line.trim();
+                if (line.startsWith('<') || line === '') return line;
+                return '<p>' + line + '</p>';
+            }).join('\n');
+            
+            return html;
+        }
+
+        // Get project from URL
+        function getProjectFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('project');
+        }
+
+        // Load project data
+        async function loadProject(projectSlug) {
+            currentProject = PROJECT_CONFIGS[projectSlug];
+            
+            if (!currentProject) {
+                document.getElementById('projectTitle').textContent = 'Project Not Found';
+                document.getElementById('projectDescription').textContent = 'This project does not exist.';
+                document.getElementById('imagesContainer').innerHTML = '<div class="error-message">Invalid project</div>';
+                return;
+            }
+
+            // Update header and info
+            document.getElementById('headerTitle').textContent = currentProject.title;
+            document.getElementById('projectTitle').textContent = currentProject.title;
+            document.getElementById('projectDescription').textContent = currentProject.description;
+
+            // Load statement if exists
+            try {
+                const response = await fetch(`content/projects/${projectSlug}.md`);
+                if (response.ok) {
+                    const markdown = await response.text();
+                    const statement = document.getElementById('projectStatement');
+                    statement.innerHTML = parseMarkdown(markdown);
+                    statement.style.display = 'block';
+                }
+            } catch (error) {
+                console.log('No statement found for project');
+            }
+
+            // Load images
+            loadProjectImages();
+        }
+
+        // Load project images
+        function loadProjectImages() {
+            const container = document.getElementById('imagesContainer');
+            container.innerHTML = '';
+
+            projectImages = currentProject.images;
+            const basePath = `images/projects/${currentProject.folder}/`;
+
+            projectImages.forEach((filename, index) => {
+                const item = document.createElement('div');
+                item.className = 'image-item';
+                item.style.minHeight = '300px';
+
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'image-loading';
+                loadingDiv.textContent = 'Loading...';
+
+                const img = document.createElement('img');
+                img.alt = filename;
+                
+                const info = document.createElement('div');
+                info.className = 'image-info';
+                info.innerHTML = `
+                    <span class="image-filename">${filename}</span>
+                    <span class="image-index">${index + 1}/${projectImages.length}</span>
+                `;
+
+                item.appendChild(loadingDiv);
+                item.appendChild(info);
+
+                img.onload = function() {
+                    item.style.minHeight = 'auto';
+                    loadingDiv.remove();
+                    item.insertBefore(img, info);
+                    img.classList.add('loaded');
+                };
+
+                img.onerror = function() {
+                    loadingDiv.textContent = 'Failed to load';
+                    loadingDiv.style.color = '#f44';
+                };
+
+                img.src = basePath + filename;
+
+                // Click to view fullscreen
+                img.onclick = () => openViewer(index);
+
+                container.appendChild(item);
+            });
+        }
+
+        // Open image viewer
+        function openViewer(index) {
+            currentImageIndex = index;
+            const viewer = document.getElementById('imageViewer');
+            const content = document.getElementById('viewerContent');
+            const info = document.getElementById('viewerInfo');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            const filename = projectImages[index];
+            const basePath = `images/projects/${currentProject.folder}/`;
+            
+            info.textContent = `${index + 1}/${projectImages.length}`;
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === projectImages.length - 1;
+
+            // Check if panoramic
+            const isPanoramic = filename.includes('the_last_frame_of_the_day');
+            
+            if (isPanoramic) {
+                content.innerHTML = `
+                    <div class="panoramic-container">
+                        <img class="panoramic-image" src="${basePath + filename}" alt="${filename}">
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `<img class="viewer-image" src="${basePath + filename}" alt="${filename}">`;
+            }
+
+            viewer.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Navigate images
+        function navigateImage(direction) {
+            const newIndex = currentImageIndex + direction;
+            if (newIndex >= 0 && newIndex < projectImages.length) {
+                openViewer(newIndex);
+            }
+        }
+
+        // Close viewer
+        function closeViewer() {
+            document.getElementById('imageViewer').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const projectSlug = getProjectFromURL();
+            if (projectSlug) {
+                loadProject(projectSlug);
+            } else {
+                // No project specified
+                document.getElementById('projectTitle').textContent = 'No Project Selected';
+                document.getElementById('projectDescription').textContent = 'Please select a project from the images page.';
+                document.getElementById('imagesContainer').innerHTML = '<div class="error-message">No project specified</div>';
+            }
+        });
+
+        // Handle back button when viewer is open
+        window.addEventListener('popstate', () => {
+            if (document.getElementById('imageViewer').classList.contains('active')) {
+                closeViewer();
+            }
+        });
+
+        // Keyboard navigation in viewer
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('imageViewer').classList.contains('active')) {
+                if (e.key === 'Escape') closeViewer();
+                else if (e.key === 'ArrowLeft') navigateImage(-1);
+                else if (e.key === 'ArrowRight') navigateImage(1);
+            }
+        });
+    </script>
+</body>
+</html>

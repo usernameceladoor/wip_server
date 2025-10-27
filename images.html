@@ -34,7 +34,7 @@
             image-rendering: crisp-edges;
         }
 
-        /* Logo - SAME AS INDEX.HTML */
+        /* Logo with transition */
         .logo {
             position: fixed;
             top: 175px;
@@ -43,10 +43,8 @@
             height: 180px;
             z-index: 1000;
             cursor: pointer;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.3s ease;
         }
-
-        .logo:hover { opacity: 0.7; }
 
         .logo img {
             width: 180px;
@@ -56,7 +54,7 @@
             display: block;
         }
 
-        /* Banner - SAME POSITION AS INDEX.HTML */
+        /* Banner with transition */
         .banner {
             position: fixed;
             top: 205px;
@@ -68,9 +66,10 @@
             color: white;
             width: 550px;
             opacity: 0.8;
+            transition: opacity 0.3s ease;
         }
 
-        /* SYNC button */
+        /* SYNC button with transition */
         .sync-button {
             position: fixed;
             top: 20px;
@@ -83,10 +82,23 @@
             font-size: 18px;
             cursor: pointer;
             letter-spacing: 2px;
-            transition: opacity 0.2s;
+            transition: opacity 0.3s ease;
         }
 
-        .sync-button:hover { opacity: 0.6; }
+        /* Scroll states */
+        body.scrolled .logo { 
+            opacity: 0.5; 
+        }
+        
+        body.scrolled .banner { 
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        body.scrolled .sync-button { 
+            opacity: 0;
+            pointer-events: none;
+        }
 
         /* Gallery layout */
         .page-content {
@@ -248,7 +260,7 @@
         }
 
         .sync-image-container {
-            background: #2E2E2E; /* 18% gray */
+            background: #2E2E2E;
             padding: 20px;
             border-radius: 4px;
             display: flex;
@@ -388,7 +400,7 @@
             { index: 12, file: 'image012_hic_sunt_dracones.AVIF', title: 'Hic Sunt Dracones' },
             { index: 13, file: 'image013_hic_ardens.AVIF', title: 'Hic Ardens' },
             { index: 14, file: 'image014_tension_one.AVIF', title: 'Tension One' },
-            { index: 15, file: 'image015_IMG_6560.AVIF', title: 'IMG_6560' },
+            { index: 15, file: 'image015_IMG_6560.AVIF', title: 'IMG+6560' },
             { index: 16, file: 'image016_MediterraneanXplorers2025.AVIF', title: 'MediterraneanXplorers2025' }
         ];
 
@@ -550,13 +562,39 @@
             }, 500);
         }
 
+        // SCROLL BEHAVIOR - Built in
+        function handleScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 50) {
+                document.body.classList.add('scrolled');
+            } else {
+                document.body.classList.remove('scrolled');
+            }
+        }
+
         // Event listeners
         document.addEventListener('DOMContentLoaded', () => {
             loadGallery();
             
             const btn = document.querySelector('.sync-button');
             if (btn) btn.addEventListener('click', openSyncPopup);
+            
+            // Initialize scroll state
+            handleScroll();
         });
+
+        // Add scroll listener with throttling
+        let scrollTicking = false;
+        window.addEventListener('scroll', () => {
+            if (!scrollTicking) {
+                window.requestAnimationFrame(() => {
+                    handleScroll();
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        }, { passive: true });
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -571,8 +609,29 @@
             if (e.key === 'Escape' && syncPopup) closeSyncPopup();
         });
     </script>
-
-     <!-- Mobile detection script -->
+    
+    <!-- Scroll behavior CSS -->
+    <style>
+    /* Scroll states for dimming elements */
+    body.scrolled .logo { 
+        opacity: 0.5 !important; 
+    }
+    
+    body.scrolled .banner { 
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    
+    body.scrolled .sync-button { 
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    </style>
+    
+    <!-- Mobile detection script -->
     <script src="js/mobile-detect.js"></script>
+
+    <!-- Scroll behavior for consistent dimming -->
+    <script src="js/scroll-behavior.js"></script>
 </body>
 </html>

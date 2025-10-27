@@ -374,10 +374,9 @@
                 item.appendChild(img);
                 item.appendChild(info);
 
-                // Link to mobile project page (when created)
+                // Link to mobile project page
                 item.onclick = () => {
-                    // For now, just alert
-                    alert(`Project: ${project.title}\n\nMobile project viewer coming soon.`);
+                    window.location.href = `m-project.html?project=${project.slug}`;
                 };
 
                 container.appendChild(item);

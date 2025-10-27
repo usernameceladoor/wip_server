@@ -94,9 +94,6 @@
             line-height: 1.6;
             opacity: 0.9;
             display: -webkit-box;
-            display: -webkit-box;
-            display: box; /* optional older fallback */
-            line-clamp: 3; /* future standard */
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
@@ -145,6 +142,7 @@
 
         .image-viewer img { max-width: none; max-height: none; display: block; position: absolute; top: 0; left: 0; }
 
+        /* Enhanced SYNC popup styles */
         .sync-popup {
             position: fixed;
             top: 0;
@@ -164,9 +162,46 @@
         .sync-popup.visible { opacity: 1; }
         .sync-popup.hidden { opacity: 0; }
 
-        .sync-image-container { max-width: 90vw; max-height: 90vh; display: flex; align-items: center; justify-content: center; }
+        .sync-content-wrapper {
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
 
-        .sync-image-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; display: block; }
+        .sync-image-container {
+            background: #2E2E2E;
+            padding: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .sync-image-container img {
+            max-width: calc(90vw - 40px);
+            max-height: calc(90vh - 200px);
+            width: auto;
+            height: auto;
+            display: block;
+        }
+
+        .sync-description {
+            background: #2E2E2E;
+            color: white;
+            padding: 20px 30px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 600px;
+            text-align: center;
+            border-radius: 4px;
+            opacity: 0.9;
+        }
 
         .sync-timer {
             position: fixed;
@@ -328,6 +363,7 @@
             document.body.appendChild(viewer);
         }
         
+        // Enhanced SYNC popup
         let syncPopup = null;
         let syncTimer = null;
 
@@ -335,22 +371,42 @@
             if (syncPopup) closeSyncPopup();
             const randomIndex = Math.floor(Math.random() * 10) + 1;
             const imageUrl = `images/sync/sync_${String(randomIndex).padStart(3, '0')}.AVIF`;
+            
             const popup = document.createElement('div');
             popup.className = 'sync-popup';
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'sync-content-wrapper';
+            
             const container = document.createElement('div');
             container.className = 'sync-image-container';
+            
             const img = document.createElement('img');
             img.src = imageUrl;
+            
+            const description = document.createElement('div');
+            description.className = 'sync-description';
+            description.innerHTML = 'SYNC - Press SYNC and get a random screen cap from the early days of Hic et Nunc in 2021. Things I grabbed in the moment as notes or reminders. Many works from other artists.';
+            
             const timer = document.createElement('div');
             timer.className = 'sync-timer';
             timer.textContent = 'Click to close';
-            img.onerror = () => { container.innerHTML = '<div style="color:white;text-align:center;padding:40px;font-family:\'Fira Mono\',monospace;"><div style="font-size:48px;margin-bottom:20px;">⚠</div><div>SYNC IMAGE NOT FOUND</div></div>'; };
+            
+            img.onerror = () => { 
+                container.innerHTML = '<div style="color:white;text-align:center;padding:40px;font-family:\'Fira Mono\',monospace;"><div style="font-size:48px;margin-bottom:20px;">⚠</div><div>SYNC IMAGE NOT FOUND</div></div>'; 
+            };
+            
             container.appendChild(img);
-            popup.appendChild(container);
+            wrapper.appendChild(container);
+            wrapper.appendChild(description);
+            popup.appendChild(wrapper);
             popup.appendChild(timer);
+            
             popup.onclick = () => closeSyncPopup();
+            
             document.body.appendChild(popup);
             syncPopup = popup;
+            
             requestAnimationFrame(() => popup.classList.add('visible'));
             syncTimer = setTimeout(() => closeSyncPopup(), 10000);
         }
@@ -375,10 +431,12 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && syncPopup) closeSyncPopup();
         });
-        
     </script>
 
-     <!-- Mobile detection script -->
+    <!-- Mobile detection script -->
     <script src="js/mobile-detect.js"></script>
+    
+    <!-- Scroll behavior for consistent dimming -->
+    <script src="js/scroll-behavior.js"></script>
 </body>
 </html>

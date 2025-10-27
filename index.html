@@ -43,18 +43,47 @@
             image-rendering: crisp-edges;
         }
 
-        /* Background - STATIC, never moves */
+        /* Main container with subtle scroll */
+        .main-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        /* Background with extra space for movement */
         #background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
+            position: absolute;
+            top: -100px;  /* Extra space above */
+            left: -100px; /* Extra space left */
+            width: calc(100% + 200px);  /* Extra width */
+            height: calc(100% + 300px); /* Extra height for scrolling */
             z-index: 1;
         }
 
         #background-image {
+            position: absolute;
+            top: 100px;  /* Center the actual image */
+            left: 100px;
+            min-width: 100vw;
+            min-height: 100vh;
+        }
+
+        /* Content wrapper - keeps elements in viewport */
+        .content-wrapper {
             position: fixed;
             top: 0;
             left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .content-wrapper * {
+            pointer-events: auto;
         }
 
         /* Logo - 200px left, 175px top, 180px wide */
@@ -174,7 +203,34 @@
             font-size: 14px;
         }
 
-        /* Simple fallback background */
+        /* Subtle scroll hint */
+        .scroll-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 12px;
+            opacity: 0.3;
+            z-index: 100;
+            animation: fade-in 2s ease-in;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 0.3; }
+        }
+
+        /* Hide scrollbars but allow scrolling */
+        .main-container::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .main-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Fallback background */
         .fallback-background {
             width: 100%;
             height: 100%;
@@ -187,32 +243,38 @@
         <p>Your browser doesn't support AVIF images. Please use Chrome 85+, Firefox 93+, or Safari 16+</p>
     </div>
 
-    <div id="background-container">
-        <div id="background-image" class="fallback-background"></div>
+    <div class="main-container" id="mainContainer">
+        <div id="background-container">
+            <div id="background-image" class="fallback-background"></div>
+        </div>
     </div>
 
-    <a href="index.html">
-        <img src="assets/Polygon_8_sided.png" alt="Celadoor" class="logo">
-    </a>
+    <div class="content-wrapper">
+        <a href="index.html">
+            <img src="assets/Polygon_8_sided.png" alt="Celadoor" class="logo">
+        </a>
 
-    <h1 class="title">CELADOOR</h1>
+        <h1 class="title">CELADOOR</h1>
 
-    <div class="banner" id="banner"></div>
+        <div class="banner" id="banner"></div>
 
-    <div class="skeleton-container">
-        <div class="skeleton-segment skeleton-longform" onclick="window.location.href='longform.html'"></div>
-        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
-        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
-        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
-        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+        <div class="skeleton-container">
+            <div class="skeleton-segment skeleton-longform" onclick="window.location.href='longform.html'"></div>
+            <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+            <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+            <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+            <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="notes.html">NOTES</a>
+            <a href="images.html">IMAGES</a>
+            <a href="projects.html">PROJECTS</a>
+            <a href="links.html">LINKS</a>
+        </nav>
+
+        <div class="scroll-hint">↓ ← → scroll</div>
     </div>
-
-    <nav class="nav-menu">
-        <a href="notes.html">NOTES</a>
-        <a href="images.html">IMAGES</a>
-        <a href="projects.html">PROJECTS</a>
-        <a href="links.html">LINKS</a>
-    </nav>
 
     <script>
         function checkAVIFSupport() {
@@ -236,11 +298,11 @@
             img.src = 'images/home/web_background.AVIF';
             
             img.onload = function() {
-                const container = document.getElementById('background-image');
+                const bgImage = document.getElementById('background-image');
                 const imgElement = document.createElement('img');
                 imgElement.src = this.src;
-                imgElement.style.cssText = 'position: fixed; top: 0; left: 0;';
-                container.replaceWith(imgElement);
+                imgElement.style.cssText = 'position: absolute; top: 0; left: 0;';
+                bgImage.replaceWith(imgElement);
                 console.log('Background loaded:', this.naturalWidth + 'x' + this.naturalHeight);
             };
 
@@ -249,8 +311,32 @@
             };
         }
 
+        // Subtle parallax effect on scroll
+        let mainContainer;
+        function initScrollEffects() {
+            mainContainer = document.getElementById('mainContainer');
+            
+            // Center the view initially
+            mainContainer.scrollLeft = 100;
+            mainContainer.scrollTop = 100;
+
+            // Hide scroll hint after first interaction
+            let scrolled = false;
+            mainContainer.addEventListener('scroll', () => {
+                if (!scrolled) {
+                    scrolled = true;
+                    const hint = document.querySelector('.scroll-hint');
+                    if (hint) {
+                        hint.style.opacity = '0';
+                        setTimeout(() => hint.remove(), 1000);
+                    }
+                }
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             loadBackgroundImage();
+            initScrollEffects();
             
             // Banner rotation - properly formatted text
             const bannerPhrases = [
@@ -277,8 +363,8 @@
             setInterval(rotateBanner, 8000);
         });
     </script>
-
-     <!-- Mobile detection script -->
+    
+    <!-- Mobile detection script -->
     <script src="js/mobile-detect.js"></script>
 </body>
 </html>
