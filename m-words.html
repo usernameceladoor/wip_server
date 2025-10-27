@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Words - M.CELADOOR</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            line-height: 1.6;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: #2E2E2E;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .spacer {
+            width: 50px;
+        }
+
+        .content-selector {
+            display: flex;
+            gap: 0;
+            margin: 20px;
+            border: 1px solid white;
+        }
+
+        .selector-button {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            padding: 15px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .selector-button:not(:last-child) {
+            border-right: 1px solid white;
+        }
+
+        .selector-button.active {
+            background: white;
+            color: #2E2E2E;
+        }
+
+        .content-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Markdown content styling */
+        .content h1 {
+            font-size: 28px;
+            margin: 30px 0 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .content h2 {
+            font-size: 22px;
+            margin: 25px 0 15px 0;
+            letter-spacing: 1px;
+        }
+
+        .content h3 {
+            font-size: 18px;
+            margin: 20px 0 10px 0;
+        }
+
+        .content p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .content ul, .content ol {
+            margin-bottom: 15px;
+            margin-left: 25px;
+        }
+
+        .content li {
+            margin-bottom: 8px;
+        }
+
+        .content blockquote {
+            border-left: 3px solid white;
+            padding-left: 15px;
+            margin: 20px 0;
+            opacity: 0.8;
+        }
+
+        .content code {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 14px;
+        }
+
+        .content pre {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+
+        .content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .content a {
+            color: white;
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+
+        .content a:hover {
+            opacity: 1;
+        }
+
+        .content hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            margin: 30px 0;
+        }
+
+        /* Document navigation for LONG FORM */
+        .doc-nav {
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+        }
+
+        .doc-nav-title {
+            font-size: 14px;
+            opacity: 0.6;
+            margin-bottom: 10px;
+        }
+
+        .doc-link {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin-bottom: 5px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .doc-link.active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.6;
+        }
+
+        .error {
+            color: #ff6b6b;
+            padding: 40px;
+            text-align: center;
+        }
+
+        @media (max-width: 400px) {
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .back-link {
+                font-size: 14px;
+            }
+            
+            .page-title {
+                font-size: 16px;
+            }
+
+            .content h1 {
+                font-size: 24px;
+            }
+
+            .content h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="m-index.html" class="back-link">← HOME</a>
+        <h1 class="page-title">WORDS</h1>
+        <div class="spacer"></div>
+    </header>
+
+    <div class="content-selector">
+        <button class="selector-button active" onclick="showContent('notes')">NOTES</button>
+        <button class="selector-button" onclick="showContent('longform')">LONG FORM</button>
+    </div>
+
+    <div id="notes-section">
+        <div class="content-container">
+            <div class="content" id="notes-content">
+                <div class="loading">Loading notes...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="longform-section" style="display: none;">
+        <div class="doc-nav" id="doc-nav">
+            <div class="doc-nav-title">DOCUMENTS</div>
+        </div>
+        <div class="content-container">
+            <div class="content" id="longform-content">
+                <div class="loading">Select a document to read</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple markdown parser
+        function parseMarkdown(md) {
+            let html = md;
+            
+            // Code blocks
+            html = html.replace(/```([^\n]*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            
+            // Headers
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+            
+            // Bold and italic
+            html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Links
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            
+            // Horizontal rules
+            html = html.replace(/^---$/gm, '<hr>');
+            
+            // Lists
+            html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, match => '<ul>' + match + '</ul>');
+            
+            // Blockquotes
+            html = html.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+            
+            // Paragraphs
+            const lines = html.split('\n\n');
+            html = lines.map(line => {
+                line = line.trim();
+                if (line.startsWith('<') || line === '') return line;
+                return '<p>' + line.replace(/\n/g, '<br>') + '</p>';
+            }).join('\n');
+            
+            return html;
+        }
+
+        // Long form documents
+        const DOCUMENTS = [
+            { slug: 'intro', title: 'Introduction', file: 'intro.md' },
+            { slug: 'process', title: 'Process', file: 'process.md' },
+            { slug: 'philosophy', title: 'Philosophy', file: 'philosophy.md' }
+        ];
+
+        let currentSection = 'notes';
+        let currentDoc = null;
+
+        // Load notes
+        async function loadNotes() {
+            const content = document.getElementById('notes-content');
+            
+            try {
+                const response = await fetch('content/notes.md');
+                if (!response.ok) throw new Error('Notes not found');
+                
+                const markdown = await response.text();
+                content.innerHTML = parseMarkdown(markdown);
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="error">
+                        <h1>Notes Coming Soon</h1>
+                        <p>Check back later for thoughts and updates.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize document navigation
+        function initDocNav() {
+            const nav = document.getElementById('doc-nav');
+            const links = DOCUMENTS.map((doc, idx) => `
+                <a href="#" class="doc-link ${idx === 0 ? 'active' : ''}" 
+                   onclick="loadDocument(${idx}); return false;">
+                   ${doc.title}
+                </a>
+            `).join('');
+            
+            nav.innerHTML = '<div class="doc-nav-title">DOCUMENTS</div>' + links;
+        }
+
+        // Load long form document
+        async function loadDocument(idx) {
+            currentDoc = idx;
+            const doc = DOCUMENTS[idx];
+            const content = document.getElementById('longform-content');
+            
+            // Update active link
+            document.querySelectorAll('.doc-link').forEach((link, i) => {
+                link.classList.toggle('active', i === idx);
+            });
+            
+            content.innerHTML = '<div class="loading">Loading...</div>';
+            
+            try {
+                const response = await fetch(`content/longform/${doc.file}`);
+                if (!response.ok) throw new Error('Document not found');
+                
+                const markdown = await response.text();
+                content.innerHTML = parseMarkdown(markdown);
+                
+                // Scroll to top of content
+                window.scrollTo(0, document.querySelector('.header').offsetHeight + 60);
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="error">
+                        <h1>Document Not Found</h1>
+                        <p>This document is not available yet.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Show content section
+        function showContent(section) {
+            currentSection = section;
+            
+            // Update buttons
+            document.querySelectorAll('.selector-button').forEach(btn => {
+                btn.classList.toggle('active', 
+                    (section === 'notes' && btn.textContent === 'NOTES') ||
+                    (section === 'longform' && btn.textContent === 'LONG FORM')
+                );
+            });
+            
+            // Show/hide sections
+            document.getElementById('notes-section').style.display = 
+                section === 'notes' ? 'block' : 'none';
+            document.getElementById('longform-section').style.display = 
+                section === 'longform' ? 'block' : 'none';
+            
+            // Load content if needed
+            if (section === 'longform' && currentDoc === null) {
+                loadDocument(0);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNotes();
+            initDocNav();
+        });
+    </script>
+</body>
+</html>

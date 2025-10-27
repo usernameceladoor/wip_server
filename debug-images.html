@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celadoor Image Debug</title>
+    <style>
+        body { 
+            font-family: 'Fira Mono', monospace; 
+            background: #2e2e2e; 
+            color: white; 
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { margin-bottom: 30px; }
+        .debug-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .debug-item {
+            padding: 15px;
+            border: 1px solid #666;
+            background: #3a3a3a;
+        }
+        .debug-item img {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+            background: #444;
+            min-height: 50px;
+        }
+        .success { color: #4f4; }
+        .error { color: #f44; }
+        .warning { color: #fa4; }
+        pre { 
+            background: rgba(255,255,255,0.1); 
+            padding: 10px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .fix-suggestion {
+            background: rgba(100,255,100,0.1);
+            padding: 10px;
+            margin-top: 10px;
+            border-left: 3px solid #4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Celadoor Image Loading Debug</h1>
+    
+    <div id="gallery-debug">
+        <h2>Gallery Images Check</h2>
+        <div class="debug-grid" id="gallery-grid"></div>
+    </div>
+    
+    <div id="sync-debug">
+        <h2>SYNC Images Check</h2>
+        <div class="debug-grid" id="sync-grid"></div>
+    </div>
+    
+    <div id="project-debug">
+        <h2>Project Images Check</h2>
+        <div class="debug-grid" id="project-grid"></div>
+    </div>
+    
+    <div id="summary">
+        <h2>Summary</h2>
+        <pre id="summary-text"></pre>
+    </div>
+
+    <script>
+        // Gallery images array from your code
+        const GALLERY_IMAGES = [
+            { index: 1, file: 'image001_decay_1.AVIF', title: 'Decay 1' },
+            { index: 2, file: 'image002_decay_2.AVIF', title: 'Decay 2' },
+            { index: 3, file: 'image003_decay_3.AVIF', title: 'Decay 3' },
+            { index: 4, file: 'image004_decay_4.AVIF', title: 'Decay 4' },
+            { index: 5, file: 'image005_decay_5.AVIF', title: 'Decay 5' },
+            { index: 6, file: 'image006_decay_6.AVIF', title: 'Decay 6' },
+            { index: 7, file: 'image007_decay_7.AVIF', title: 'Decay 7' },
+            { index: 8, file: 'image008_decay_8.AVIF', title: 'Decay 8' },
+            { index: 9, file: 'image009_decay_9.AVIF', title: 'Decay 9' },
+            { index: 10, file: 'image010_decay_berlin.AVIF', title: 'Decay Berlin' },
+            { index: 11, file: 'image011_decay_reflect.AVIF', title: 'Decay Reflect' },
+            { index: 12, file: 'image012_hic_sunt_dracones.AVIF', title: 'Hic Sunt Dracones' },
+            { index: 13, file: 'image013_hic_ardens.AVIF', title: 'Hic Ardens' },
+            { index: 14, file: 'image014_tension_one.AVIF', title: 'Tension One' },
+            { index: 15, file: 'image015_IMG_6560.AVIF', title: 'IMG_6560' },
+            { index: 16, file: 'image016_MediterraneanXplorers2025.AVIF', title: 'MediterraneanXplorers2025' }
+        ];
+
+        const PROJECTS = [
+            { slug: 'interlocutor', image: 'interlocutor.AVIF' },
+            { slug: 'costanza', image: 'costanza.AVIF' },
+            { slug: 'nucleation', image: 'nucleation.AVIF' },
+            { slug: 'decay_poster', image: 'decay_poster.AVIF' },
+            { slug: 'the_last_frame_of_the_day', image: 'the_last_frame_of_the_day.AVIF' },
+            { slug: 'panorama', image: 'panorama.AVIF' }
+        ];
+
+        const results = {
+            gallery: { success: 0, failed: 0, errors: [] },
+            sync: { success: 0, failed: 0, errors: [] },
+            projects: { success: 0, failed: 0, errors: [] }
+        };
+
+        // Check gallery images
+        function checkGalleryImages() {
+            const container = document.getElementById('gallery-grid');
+            
+            GALLERY_IMAGES.forEach(imageData => {
+                const item = document.createElement('div');
+                item.className = 'debug-item';
+                
+                const img = new Image();
+                const url = 'images/images/' + imageData.file;
+                
+                img.onload = function() {
+                    results.gallery.success++;
+                    item.innerHTML = `
+                        <div class="success">✓ ${imageData.file}</div>
+                        <img src="${url}" alt="${imageData.title}">
+                        <div>Index: ${imageData.index}</div>
+                        <div>Dimensions: ${this.naturalWidth}x${this.naturalHeight}</div>
+                    `;
+                    updateSummary();
+                };
+                
+                img.onerror = function() {
+                    results.gallery.failed++;
+                    results.gallery.errors.push({
+                        file: imageData.file,
+                        url: url,
+                        suggestion: checkFilenameSuggestions(imageData.file)
+                    });
+                    
+                    item.innerHTML = `
+                        <div class="error">✗ ${imageData.file}</div>
+                        <div>Failed to load from:</div>
+                        <pre>${url}</pre>
+                        ${checkFilenameSuggestions(imageData.file)}
+                    `;
+                    updateSummary();
+                };
+                
+                img.src = url;
+                container.appendChild(item);
+            });
+        }
+
+        // Check SYNC images
+        function checkSyncImages() {
+            const container = document.getElementById('sync-grid');
+            
+            for (let i = 1; i <= 10; i++) {
+                const item = document.createElement('div');
+                item.className = 'debug-item';
+                
+                const filename = `sync_${String(i).padStart(3, '0')}.AVIF`;
+                const url = `images/sync/${filename}`;
+                const img = new Image();
+                
+                img.onload = function() {
+                    results.sync.success++;
+                    item.innerHTML = `
+                        <div class="success">✓ ${filename}</div>
+                        <img src="${url}" alt="SYNC ${i}">
+                        <div>Dimensions: ${this.naturalWidth}x${this.naturalHeight}</div>
+                    `;
+                    updateSummary();
+                };
+                
+                img.onerror = function() {
+                    results.sync.failed++;
+                    results.sync.errors.push({
+                        file: filename,
+                        url: url
+                    });
+                    
+                    item.innerHTML = `
+                        <div class="error">✗ ${filename}</div>
+                        <div>Failed to load from:</div>
+                        <pre>${url}</pre>
+                    `;
+                    updateSummary();
+                };
+                
+                img.src = url;
+                container.appendChild(item);
+            }
+        }
+
+        // Check project images
+        function checkProjectImages() {
+            const container = document.getElementById('project-grid');
+            
+            PROJECTS.forEach(project => {
+                const item = document.createElement('div');
+                item.className = 'debug-item';
+                
+                const url = `images/projects/${project.image}`;
+                const img = new Image();
+                
+                img.onload = function() {
+                    results.projects.success++;
+                    item.innerHTML = `
+                        <div class="success">✓ ${project.image}</div>
+                        <img src="${url}" alt="${project.slug}">
+                        <div>Project: ${project.slug}</div>
+                        <div>Dimensions: ${this.naturalWidth}x${this.naturalHeight}</div>
+                    `;
+                    updateSummary();
+                };
+                
+                img.onerror = function() {
+                    results.projects.failed++;
+                    results.projects.errors.push({
+                        file: project.image,
+                        url: url
+                    });
+                    
+                    item.innerHTML = `
+                        <div class="error">✗ ${project.image}</div>
+                        <div>Failed to load from:</div>
+                        <pre>${url}</pre>
+                    `;
+                    updateSummary();
+                };
+                
+                img.src = url;
+                container.appendChild(item);
+            });
+        }
+
+        // Check for common filename issues
+        function checkFilenameSuggestions(filename) {
+            const suggestions = [];
+            
+            // Check for case sensitivity issues
+            if (filename.includes('.avif')) {
+                suggestions.push(`Try renaming to: ${filename.replace('.avif', '.AVIF')}`);
+            }
+            
+            // Check for special characters
+            if (filename.match(/[^a-zA-Z0-9_.\-]/)) {
+                suggestions.push('Filename contains special characters that might cause issues');
+            }
+            
+            if (suggestions.length > 0) {
+                return `<div class="fix-suggestion"><strong>Suggestions:</strong><br>${suggestions.join('<br>')}</div>`;
+            }
+            
+            return '';
+        }
+
+        // Update summary
+        function updateSummary() {
+            const total = {
+                success: results.gallery.success + results.sync.success + results.projects.success,
+                failed: results.gallery.failed + results.sync.failed + results.projects.failed
+            };
+            
+            let summary = `Total Images Checked: ${total.success + total.failed}\n`;
+            summary += `Successfully Loaded: ${total.success}\n`;
+            summary += `Failed to Load: ${total.failed}\n\n`;
+            
+            summary += `Gallery: ${results.gallery.success}/${GALLERY_IMAGES.length} loaded\n`;
+            summary += `SYNC: ${results.sync.success}/10 loaded\n`;
+            summary += `Projects: ${results.projects.success}/${PROJECTS.length} loaded\n`;
+            
+            if (total.failed > 0) {
+                summary += `\n--- FAILED IMAGES ---\n`;
+                
+                if (results.gallery.errors.length > 0) {
+                    summary += `\nGallery Errors:\n`;
+                    results.gallery.errors.forEach(err => {
+                        summary += `- ${err.file} (${err.url})\n`;
+                    });
+                }
+                
+                if (results.sync.errors.length > 0) {
+                    summary += `\nSYNC Errors:\n`;
+                    results.sync.errors.forEach(err => {
+                        summary += `- ${err.file} (${err.url})\n`;
+                    });
+                }
+                
+                if (results.projects.errors.length > 0) {
+                    summary += `\nProject Errors:\n`;
+                    results.projects.errors.forEach(err => {
+                        summary += `- ${err.file} (${err.url})\n`;
+                    });
+                }
+            }
+            
+            document.getElementById('summary-text').textContent = summary;
+        }
+
+        // Run checks on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkGalleryImages();
+            checkSyncImages();
+            checkProjectImages();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "costanza": {
+    "images": [
+      "image001_costanza_0.avif",
+      "image002_costanza_2.avif",
+      "image003_costanza_3.avif",
+      "image004_costanza_4.avif",
+      "image005_costanza_1.avif"
+    ]
+  },
+  "decay_poster": {
+    "images": [
+      "image001_decay_poster.avif"
+    ]
+  },
+  "interlocutor": {
+    "images": [
+      "image001_interlocutor_23.avif",
+      "image002_interlocutor_1.avif",
+      "image003_interlocutor_2.avif",
+      "image004_interlocutor_3.avif",
+      "image005_interlocutor_4.avif",
+      "image006_interlocutor_5.avif",
+      "image007_interlocutor_6.avif",
+      "image008_interlocutor_7.avif",
+      "image009_interlocutor_8.avif",
+      "image010_interlocutor_9.avif",
+      "image011_interlocutor_10.avif",
+      "image012_interlocutor_11.avif",
+      "image013_interlocutor_12.avif",
+      "image014_interlocutor_13.avif",
+      "image015_interlocutor_14.avif",
+      "image016_interlocutor_15.avif",
+      "image017_interlocutor_16.avif",
+      "image018_interlocutor_17.avif",
+      "image019_interlocutor_18.avif",
+      "image020_interlocutor_19.avif",
+      "image021_interlocutor_20.avif",
+      "image022_interlocutor_21.avif",
+      "image023_interlocutor_22.avif"
+    ]
+  },
+  "nucleation": {
+    "images": [
+      "image001_nucleation_24.avif",
+      "image002_nucleation_1.avif",
+      "image003_nucleation_2.avif",
+      "image004_nucleation_3.avif",
+      "image005_nucleation_4.avif",
+      "image006_nucleation_5.avif",
+      "image007_nucleation_6.avif",
+      "image008_nucleation_7.avif",
+      "image009_nucleation_8.avif",
+      "image010_nucleation_9.avif",
+      "image011_nucleation_10.avif",
+      "image012_nucleation_11.avif",
+      "image013_nucleation_12.avif",
+      "image014_nucleation_13.avif",
+      "image015_nucleation_14.avif",
+      "image016_nucleation_15.avif",
+      "image017_nucleation_16.avif",
+      "image018_nucleation_17.avif",
+      "image019_nucleation_18.avif",
+      "image020_nucleation_19.avif",
+      "image021_nucleation_20.avif",
+      "image022_nucleation_21.avif",
+      "image023_nucleation_22.avif",
+      "image024_nucleation_23.avif"
+    ]
+  }
+}

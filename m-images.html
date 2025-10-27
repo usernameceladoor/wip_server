@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Images - M.CELADOOR</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            line-height: 1.6;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: #2E2E2E;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .spacer {
+            width: 50px;
+        }
+
+        .images-container {
+            padding-bottom: 40px;
+        }
+
+        .image-item {
+            position: relative;
+            background: #1a1a1a;
+            margin-bottom: 2px;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .image-item img.loaded {
+            opacity: 1;
+        }
+
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #666;
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        .image-info {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.5);
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-title {
+            opacity: 0.8;
+        }
+
+        .image-index {
+            opacity: 0.6;
+        }
+
+        /* Fullscreen viewer */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 1000;
+            display: none;
+            overflow: auto;
+        }
+
+        .image-viewer.active {
+            display: block;
+        }
+
+        .viewer-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .close-viewer {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            padding: 5px;
+        }
+
+        .viewer-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-top: 60px;
+        }
+
+        .load-more {
+            padding: 20px;
+            text-align: center;
+            margin: 40px 20px;
+        }
+
+        .load-more-button {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 15px 30px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .load-more-button:active {
+            background: white;
+            color: #2E2E2E;
+        }
+
+        .load-more-button:disabled {
+            opacity: 0.5;
+        }
+
+        /* Projects Section */
+        .section-divider {
+            padding: 30px 20px;
+            background: rgba(255,255,255,0.05);
+            font-size: 20px;
+            letter-spacing: 2px;
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+
+        .project-item {
+            margin-bottom: 2px;
+            cursor: pointer;
+        }
+
+        .project-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .project-info {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.7);
+            font-size: 14px;
+        }
+
+        .project-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .project-description {
+            opacity: 0.8;
+            font-size: 13px;
+        }
+
+        @media (max-width: 400px) {
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .back-link {
+                font-size: 14px;
+            }
+            
+            .page-title {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="m-index.html" class="back-link">← HOME</a>
+        <h1 class="page-title">IMAGES</h1>
+        <div class="spacer"></div>
+    </header>
+
+    <div class="images-container">
+        <!-- Gallery Images -->
+        <div id="gallery-images"></div>
+        
+        <!-- Load More Button -->
+        <div class="load-more">
+            <button class="load-more-button" id="loadMoreBtn">Load More Images</button>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="section-divider">PROJECTS</div>
+        <div id="projects-list"></div>
+    </div>
+
+    <!-- Fullscreen Viewer -->
+    <div class="image-viewer" id="imageViewer">
+        <div class="viewer-header">
+            <span id="viewerInfo"></span>
+            <a href="#" class="close-viewer" onclick="closeViewer(); return false;">×</a>
+        </div>
+        <img class="viewer-image" id="viewerImage">
+    </div>
+
+    <script>
+        // Gallery images data
+        const GALLERY_IMAGES = [
+            { index: 1, file: 'image001_decay_1.AVIF', title: 'Decay 1' },
+            { index: 2, file: 'image002_decay_2.AVIF', title: 'Decay 2' },
+            { index: 3, file: 'image003_decay_3.AVIF', title: 'Decay 3' },
+            { index: 4, file: 'image004_decay_4.AVIF', title: 'Decay 4' },
+            { index: 5, file: 'image005_decay_5.AVIF', title: 'Decay 5' },
+            { index: 6, file: 'image006_decay_6.AVIF', title: 'Decay 6' },
+            { index: 7, file: 'image007_decay_7.AVIF', title: 'Decay 7' },
+            { index: 8, file: 'image008_decay_8.AVIF', title: 'Decay 8' },
+            { index: 9, file: 'image009_decay_9.AVIF', title: 'Decay 9' },
+            { index: 10, file: 'image010_decay_berlin.AVIF', title: 'Decay Berlin' },
+            { index: 11, file: 'image011_decay_reflect.AVIF', title: 'Decay Reflect' },
+            { index: 12, file: 'image012_hic_sunt_dracones.AVIF', title: 'Hic Sunt Dracones' },
+            { index: 13, file: 'image013_hic_ardens.AVIF', title: 'Hic Ardens' },
+            { index: 14, file: 'image014_tension_one.AVIF', title: 'Tension One' },
+            { index: 15, file: 'image015_οἶνοψ_πόντος.AVIF', title: 'οἶνοψ πόντος' },
+            { index: 16, file: 'image016_MediterraneanXplorers2025.AVIF', title: 'MediterraneanXplorers2025' }
+        ];
+
+        const PROJECTS = [
+            { slug: 'interlocutor', image: 'interlocutor.AVIF', title: 'INTERLOCUTOR', description: 'Generative exploration of communication barriers' },
+            { slug: 'costanza', image: 'costanza.AVIF', title: 'COSTANZA', description: 'Patterns of constancy in digital flux' },
+            { slug: 'nucleation', image: 'nucleation.AVIF', title: 'NUCLEATION', description: 'Crystal formation in computational space' },
+            { slug: 'decay_poster', image: 'decay_poster.AVIF', title: 'DECAY POSTER', description: 'Visual entropy and degradation' },
+            { slug: 'the_last_frame_of_the_day', image: 'the_last_frame_of_the_day.AVIF', title: 'THE LAST FRAME OF THE DAY', description: 'Extended temporal capture' },
+            { slug: 'panorama', image: 'panorama.AVIF', title: 'PANORAMA', description: 'Wide-format generative landscapes' }
+        ];
+
+        let loadedImages = 0;
+        const IMAGES_PER_LOAD = 6;
+
+        // Create image element
+        function createImageElement(imageData) {
+            const container = document.createElement('div');
+            container.className = 'image-item';
+            container.style.minHeight = '300px';
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'image-loading';
+            loadingDiv.textContent = 'Loading...';
+
+            const img = document.createElement('img');
+            img.alt = imageData.title;
+            
+            const info = document.createElement('div');
+            info.className = 'image-info';
+            info.innerHTML = `
+                <span class="image-title">${imageData.title}</span>
+                <span class="image-index">${imageData.index}/${GALLERY_IMAGES.length}</span>
+            `;
+
+            container.appendChild(loadingDiv);
+            container.appendChild(info);
+
+            img.onload = function() {
+                container.style.minHeight = 'auto';
+                loadingDiv.remove();
+                container.insertBefore(img, info);
+                img.classList.add('loaded');
+            };
+
+            img.onerror = function() {
+                loadingDiv.textContent = 'Failed to load';
+                loadingDiv.style.color = '#f44';
+            };
+
+            img.src = 'images/images/' + imageData.file;
+
+            // Click to view fullscreen
+            img.onclick = () => openViewer(imageData);
+
+            return container;
+        }
+
+        // Load gallery images
+        function loadGalleryImages() {
+            const container = document.getElementById('gallery-images');
+            const endIndex = Math.min(loadedImages + IMAGES_PER_LOAD, GALLERY_IMAGES.length);
+
+            for (let i = loadedImages; i < endIndex; i++) {
+                container.appendChild(createImageElement(GALLERY_IMAGES[i]));
+            }
+
+            loadedImages = endIndex;
+
+            // Update button
+            const btn = document.getElementById('loadMoreBtn');
+            if (loadedImages >= GALLERY_IMAGES.length) {
+                btn.textContent = 'All Images Loaded';
+                btn.disabled = true;
+            } else {
+                btn.textContent = `Load More (${GALLERY_IMAGES.length - loadedImages} remaining)`;
+            }
+        }
+
+        // Load projects
+        function loadProjects() {
+            const container = document.getElementById('projects-list');
+
+            PROJECTS.forEach(project => {
+                const item = document.createElement('div');
+                item.className = 'project-item';
+                
+                const img = document.createElement('img');
+                img.src = `images/projects/${project.image}`;
+                img.alt = project.title;
+
+                const info = document.createElement('div');
+                info.className = 'project-info';
+                info.innerHTML = `
+                    <div class="project-title">${project.title}</div>
+                    <div class="project-description">${project.description}</div>
+                `;
+
+                item.appendChild(img);
+                item.appendChild(info);
+
+                // Link to mobile project page (when created)
+                item.onclick = () => {
+                    // For now, just alert
+                    alert(`Project: ${project.title}\n\nMobile project viewer coming soon.`);
+                };
+
+                container.appendChild(item);
+            });
+        }
+
+        // Fullscreen viewer
+        function openViewer(imageData) {
+            const viewer = document.getElementById('imageViewer');
+            const img = document.getElementById('viewerImage');
+            const info = document.getElementById('viewerInfo');
+
+            info.textContent = `${imageData.title} (${imageData.index}/${GALLERY_IMAGES.length})`;
+            img.src = 'images/images/' + imageData.file;
+            viewer.classList.add('active');
+
+            // Prevent body scroll when viewer is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeViewer() {
+            document.getElementById('imageViewer').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGalleryImages();
+            loadProjects();
+
+            document.getElementById('loadMoreBtn').addEventListener('click', loadGalleryImages);
+
+            // Close viewer on ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeViewer();
+            });
+        });
+
+        // Handle back button when viewer is open
+        window.addEventListener('popstate', () => {
+            if (document.getElementById('imageViewer').classList.contains('active')) {
+                closeViewer();
+            }
+        });
+    </script>
+</body>
+</html>

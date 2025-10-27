@@ -1,0 +1,59 @@
+# Celadoor: Hacktographic Practice at the Intersection of Computational Photography and Glitch Aesthetics
+
+## Introduction: The Emergence of Hacktographic Practice
+
+Celadoor represents a distinctive voice in contemporary digital art, operating at the intersection of computational photography, glitch aesthetics, and generative processes. Through what the artist terms "hacktographic" practice—a portmanteau that effectively communicates the hacker-like approach of exploiting system behaviors in ways unintended by designers—celadoor creates abstract images that reveal the hidden computational logic underlying consumer smartphone technology. Working primarily with unmodified iPhones, celadoor deliberately triggers edge cases within the device's panorama function to generate images that exist in the liminal space between photographic representation and algorithmic artifact.
+
+The artist's statement encapsulates this approach: "I take pictures of moments that never happened and landscapes that don't exist." This paradoxical assertion points to the fundamental nature of celadoor's work—photographs that are simultaneously products of a camera system and violations of that system's intended purpose. Through systematic manipulation of the iPhone's panorama feature using light sources and "interlocutors" (objects that control light through filtering, diffusion, diffraction, and reflection), celadoor creates works that expose what Rosa Menkman might call the "unconscious" of computational photography systems.
+
+## Situating Celadoor Within Historical and Contemporary Contexts
+
+### The Genealogy of Process and Generative Art
+
+Celadoor's practice emerges from a rich lineage of process-oriented and generative art that extends back to the mid-20th century. The fundamental principle of generative art—creating autonomous systems that produce artwork through predetermined rules while incorporating elements of chance—finds early expression in works such as Johann Kirnberger's "Musical Dice Game" (1757) and later in the compositional strategies of John Cage. The introduction of computational systems in the 1960s, exemplified by the work of Georg Nees, Frieder Nake, and Vera Molnár, established the foundation for art that emerges from the interplay between human intention and machine process.
+
+What distinguishes celadoor's approach within this tradition is the exploitation of existing consumer technology rather than the creation of custom systems. Where early computer artists worked with plotters and mainframes, and contemporary generative artists often write custom code using platforms like Processing, celadoor appropriates the iPhone's black-box computational system as both medium and collaborator. This approach aligns with what Max Bense described in his seminal text *Aesthetica* (1965) as the "artificial" category of production, characterized by "the introduction of a mediation scheme between creator and work, consisting of program and programming language."
+
+### Glitch Art and the Aesthetics of Error
+
+The glitch art movement provides crucial context for understanding celadoor's aesthetic and conceptual framework. Rosa Menkman, whose *Glitch Studies Manifesto* (2009) and theoretical work have been instrumental in articulating glitch as an artistic practice, describes the glitch as "an uncanny break of an expected technological flow or threatening loss of control." This definition resonates deeply with celadoor's process, which deliberately induces failures in the iPhone's image processing to generate outputs that "depart from the visual polish that we expect from computational photography."
+
+Like Nam June Paik's manipulation of television signals with magnets in *Magnet TV* (1965) or the circuit bending practices pioneered by Reed Ghazala, celadoor's work exploits the gap between a technology's intended function and its material capabilities. However, unlike hardware-based circuit bending, which requires physical modification of devices, celadoor's approach might be termed "behavioral bending"—using unexpected inputs and actions to trigger unintended computational responses while leaving the hardware intact.
+
+### Computational Photography as Artistic Medium
+
+The rise of computational photography—defined as digital image capture and processing techniques that use computation instead of purely optical processes—has fundamentally altered the nature of photographic practice. As documented in recent scholarship, techniques such as HDR imaging, panorama stitching, and portrait mode blur rely on complex algorithms that make decisions about image construction largely invisible to users. The iPhone's panorama function, which celadoor exploits, represents a particularly sophisticated example of this computational mediation, employing what Apple has increasingly incorporated since 2021: elements of photogrammetry and depth data from multiple cameras.
+
+Celadoor's intervention into this system reveals what media theorist Vilém Flusser might call the "program" of the apparatus—the predetermined possibilities encoded within the device. By pushing the panorama function beyond its design parameters through systematic movement patterns and optical occlusion, celadoor makes visible the normally transparent computational processes that construct contemporary photographic images.
+
+## Exploiting Design Assumptions: The Politics of Edge Cases
+
+Central to celadoor's practice is the exploitation of what software developers term "edge cases"—scenarios that occur at the extreme operating parameters of a system. As celadoor notes, these represent moments where "a person or a committee made a decision based on a lot of assumptions about how the technology will be used by a typical human being." The artist's work systematically violates these assumptions, revealing how technical products embody human decisions, limitations, and errors.
+
+This approach carries implicit political dimensions. By demonstrating that even the most sophisticated computational systems contain exploitable gaps, celadoor's work serves as a form of media critique. It challenges what Menkman identifies as the contemporary tendency to accept the black box as "totally impenetrable," instead treating consumer technology as a site for creative investigation and subversion. The artist's description of the process as requiring "forbearance" and producing "a lot of images that are pretty useless" alongside "moments where the camera does not output anything at all" emphasizes the labor and patience required to work against the grain of technological optimization.
+
+The specific techniques employed—using candy wrappers, Scottish chocolate caramel wafer biscuit wrappers, and reclaimed food and drink labels as interlocutors—further emphasize the quotidian, accessible nature of this intervention. Unlike artists working with expensive equipment or specialized programming knowledge, celadoor demonstrates that critical engagement with computational systems can emerge from the detritus of consumer culture itself.
+
+## Creating Value Through Constraint and Collaboration
+
+Celadoor's work generates artistic value through several interconnected strategies that align with and extend established practices in digital and generative art. First, the embrace of technological constraint as a creative catalyst follows the tradition of artists from the Dadaists through to contemporary practitioners who have found liberation within limitation. The iPhone's panorama function becomes what Brian Eno might term a "generative system"—a set of rules that, once set in motion, produces results that surprise even their initiator.
+
+Second, celadoor's practice reframes the relationship between artist and machine as genuinely collaborative. The artist provides "input data (color, light, movement, and a broader list of optical effects)" while the iPhone's software—which "thinks that this is just another day at the office"—processes this input according to its own logic. This produces what celadoor describes as "a disconnect between the input and the output," a generative gap that becomes the space of artistic production.
+
+The resulting images—which range from abstract color fields to complex patterns resembling digital decay—achieve what generative artist Tyler Hobbs identifies as crucial to computational art: they reveal "the complex and intricate results you can get from a set of simple rules." Works like celadoor's "Decay" series, characterized by "intricate and disorderly groups of pixels, forming mottled patterns," create new aesthetic experiences that could not exist without the specific interaction between human intention and computational process.
+
+## Parallels and Divergences: Contextualizing Celadoor's Contribution
+
+Celadoor's practice resonates with several contemporary artists working at similar intersections. Phillip Stearns's glitch textiles translate digital errors into physical objects, while Kim Asendorf's pixel sorting algorithms reorganize image data according to various parameters. The work of JODI (Joan Heemskerk and Dirk Paesmans) similarly exploits the gap between user expectation and system behavior, though often in more confrontational ways.
+
+However, celadoor's specific focus on the iPhone as artistic tool places the work in dialogue with a broader democratization of image-making technology. As Casey Reas notes regarding Processing's impact, tools that make computational creation accessible have "revolutionized data visualization, pop culture, and fine generative art." Celadoor extends this democratization by demonstrating that even without coding ability, artists can engage critically and creatively with computational systems.
+
+The artist's systematic documentation of process across different iPhone generations (from iPhone 6 through iPhone 14) also provides a unique contribution: a visual archaeology of computational photography's evolution. This longitudinal approach reveals how changes in hardware and software alter the possibility space for glitch-based practice, creating what might be considered a form of media-specific art history.
+
+## Conclusion: Toward a Hacktographic Aesthetics
+
+Celadoor's work ultimately proposes what might be termed a "hacktographic aesthetics"—an approach to image-making that treats consumer technology not as a transparent tool but as a collaborative partner with its own agency, limitations, and creative potential. By working within the narrow space between functional and dysfunctional operation, celadoor reveals the contingent nature of computational photography while simultaneously producing compelling abstract images that stand as autonomous artworks.
+
+This practice offers several important contributions to contemporary digital art discourse. It demonstrates that critical engagement with technology need not require specialized technical knowledge or equipment. It reveals the ongoing relevance of glitch and error as sources of aesthetic experience and conceptual insight. Most significantly, it shows how artists can create meaningful dialogue with the algorithmic systems that increasingly mediate contemporary visual culture, transforming tools of standardization into instruments of creative expression.
+
+As computational photography continues to evolve—incorporating machine learning, neural networks, and increasingly sophisticated processing—artists like celadoor provide essential counternarratives to the teleological progression toward "perfect" images. Their work reminds us that within every system designed for efficiency and optimization lie possibilities for surprise, beauty, and critical reflection. In embracing the glitch, the error, and the edge case, celadoor's hacktographic practice affirms the enduring human capacity to find creativity within constraint and meaning within malfunction.

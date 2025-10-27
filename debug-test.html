@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celadoor Debug Test</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            background: #2e2e2e; 
+            color: white; 
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #666;
+        }
+        .success { color: #4f4; }
+        .error { color: #f44; }
+        pre { 
+            background: rgba(255,255,255,0.1); 
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Celadoor Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>Browser Checks</h2>
+        <div id="browser-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>AVIF Support</h2>
+        <div id="avif-test"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Font Loading</h2>
+        <div id="font-test"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Mobile Detection</h2>
+        <div id="mobile-test"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Errors</h2>
+        <pre id="console-errors"></pre>
+    </div>
+
+    <script>
+        // Capture console errors
+        const errors = [];
+        const originalError = console.error;
+        console.error = function(...args) {
+            errors.push(args.join(' '));
+            document.getElementById('console-errors').textContent = errors.join('\n');
+            originalError.apply(console, args);
+        };
+
+        // Browser info
+        document.getElementById('browser-info').innerHTML = `
+            <p>User Agent: ${navigator.userAgent}</p>
+            <p>Window Size: ${window.innerWidth}x${window.innerHeight}</p>
+            <p>Pixel Ratio: ${window.devicePixelRatio}</p>
+        `;
+
+        // AVIF test
+        function checkAVIFSupport() {
+            return new Promise((resolve) => {
+                const avif = new Image();
+                avif.src = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=';
+                avif.onload = () => resolve(true);
+                avif.onerror = () => resolve(false);
+            });
+        }
+
+        checkAVIFSupport().then(supported => {
+            document.getElementById('avif-test').innerHTML = 
+                `<p class="${supported ? 'success' : 'error'}">AVIF Support: ${supported ? 'YES' : 'NO'}</p>`;
+        });
+
+        // Font loading test
+        document.fonts.ready.then(() => {
+            const fontLoaded = document.fonts.check('1em Fira Mono');
+            document.getElementById('font-test').innerHTML = 
+                `<p class="${fontLoaded ? 'success' : 'error'}">Fira Mono: ${fontLoaded ? 'Loaded' : 'Not loaded'}</p>`;
+        });
+
+        // Mobile detection
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+        document.getElementById('mobile-test').innerHTML = `
+            <p>Is Mobile: ${isMobile ? 'YES' : 'NO'}</p>
+            <p>Touch Support: ${'ontouchstart' in window ? 'YES' : 'NO'}</p>
+        `;
+
+        // Test image loading
+        const testImg = new Image();
+        testImg.onload = () => {
+            console.log('Test image loaded successfully');
+        };
+        testImg.onerror = () => {
+            console.error('Test image failed to load');
+        };
+        testImg.src = 'assets/Polygon_8_sided.png';
+
+        // Check for common issues
+        window.addEventListener('error', (e) => {
+            console.error('Window error:', e.message, 'at', e.filename, ':', e.lineno, ':', e.colno);
+        });
+
+        // Check if all required elements exist
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded successfully');
+            
+            // List of common IDs that should exist
+            const requiredIds = ['banner', 'gallery', 'projects-container'];
+            const currentPage = window.location.pathname.split('/').pop();
+            
+            console.log('Current page:', currentPage || 'index.html');
+        });
+    </script>
+</body>
+</html>

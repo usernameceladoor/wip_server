@@ -1,0 +1,503 @@
+/* ================================================
+   MOBILE.CSS - Mobile Optimization for Celadoor
+   Prompt 10: Pixel-accurate mobile handling
+   ================================================ */
+
+/* Mobile detection and base rules */
+@media only screen and (max-width: 768px) {
+    
+    /* ============================================
+       UNIVERSAL MOBILE ADJUSTMENTS
+       ============================================ */
+    
+    body {
+        /* Prevent text size adjustment on rotation */
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        
+        /* Disable pull-to-refresh */
+        overscroll-behavior-y: contain;
+    }
+    
+    /* Logo - MUCH smaller on mobile */
+    .logo {
+        top: 15px;
+        left: 15px;
+        width: 40px;   /* Was 80px - now 40px */
+        height: 40px;
+        opacity: 0.7;  /* Subtle */
+    }
+    
+    .logo img {
+        width: 40px;
+        height: 40px;
+        max-width: 40px;
+        max-height: 40px;
+    }
+    
+    /* SYNC button - smaller, less prominent */
+    .sync-button {
+        font-size: 11px;   /* Smaller */
+        padding: 10px 12px;
+        min-width: 50px;
+        min-height: 44px;
+        opacity: 0.8;      /* Subtle */
+        top: 15px;
+        right: 15px;
+    }
+    
+    /* Page content - cleaner spacing */
+    .page-content {
+        padding-top: 80px;  /* Less top padding */
+        padding-bottom: 40px;
+    }
+    
+    /* White line - minimal */
+    .white-line {
+        width: calc(100% - 30px);
+        margin: 0 15px 20px 15px;
+        height: 1px;  /* Thinner on mobile */
+    }
+    
+    /* ============================================
+       HOME PAGE (index.html)
+       ============================================ */
+    
+    .home-background {
+        /* Still full viewport, but may crop */
+        width: 100vw;
+        height: 100vh;
+    }
+    
+    .skeleton-menu {
+        /* Stack vertically on mobile */
+        width: 90%;
+        margin: 0 auto;
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .menu-item {
+        font-size: 24px;
+        min-height: 60px; /* Larger touch target */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* ============================================
+       IMAGES GALLERY (images.html)
+       ============================================ */
+    
+    .gallery-container {
+        width: 100%;
+        padding: 0 15px;  /* Minimal padding */
+    }
+    
+    .gallery-grid {
+        /* Single column - full width tiles */
+        display: flex;
+        flex-direction: column;
+        gap: 15px;  /* Tighter spacing */
+        align-items: center;
+        width: 100%;
+    }
+    
+    .gallery-tile {
+        /* Full width on mobile */
+        width: calc(100vw - 30px);  /* Full width minus padding */
+        height: calc(100vw - 30px); /* Square */
+        min-width: 280px;
+        max-width: 500px;  /* Cap maximum */
+    }
+    
+    /* If screen < 360px, allow horizontal scroll */
+    @media (max-width: 380px) {
+        .gallery-container {
+            overflow-x: auto;
+            padding: 0;
+        }
+        
+        .gallery-grid {
+            width: 360px;
+            margin: 0 auto;
+        }
+    }
+    
+    /* ============================================
+       IMAGE VIEWER - MOBILE VERSION
+       ============================================ */
+    
+    .image-viewer {
+        /* Full screen */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden; /* No scrolling - pan only */
+    }
+    
+    .image-viewer img {
+        /* Native resolution - no scaling */
+        max-width: none;
+        max-height: none;
+        
+        /* Start positioned at top-left */
+        position: absolute;
+        top: 0;
+        left: 0;
+        
+        /* Enable touch panning */
+        touch-action: pan-x pan-y;
+    }
+    
+    /* Viewer controls - simplified for mobile */
+    .viewer-controls {
+        top: 10px;
+        flex-direction: column;
+        gap: 10px;
+        width: auto;
+    }
+    
+    .viewer-button {
+        min-width: 50px;
+        min-height: 50px;
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+    
+    /* Viewer hint - larger for mobile */
+    .viewer-hint {
+        font-size: 12px;
+        padding: 15px 20px;
+        bottom: 10px;
+    }
+    
+    /* Viewer info - adjusted for mobile */
+    .viewer-info {
+        top: auto;
+        bottom: 60px;
+        right: 10px;
+        left: 10px;
+        font-size: 11px;
+        max-width: 90vw;
+    }
+    
+    /* ============================================
+       PROJECTS LIST (projects.html)
+       ============================================ */
+    
+    .projects-container {
+        width: 100%;
+        padding: 0 15px;
+    }
+    
+    .project-row {
+        flex-direction: column;
+        gap: 15px;
+        min-height: auto;
+        padding: 20px 0;
+    }
+    
+    .project-image {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .project-image img {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .project-text {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .project-title {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+    
+    .project-description {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    /* ============================================
+       PROJECT DETAIL (project.html)
+       ============================================ */
+    
+    .project-header {
+        width: 100%;
+        padding: 0 15px;
+    }
+    
+    .project-title {
+        font-size: 32px;
+        letter-spacing: 2px;
+    }
+    
+    .project-statement {
+        font-size: 14px;
+        line-height: 1.6;
+        max-width: 100%;
+    }
+    
+    /* Reuse gallery mobile layout */
+    
+    /* ============================================
+       TEXT PAGES (notes, links, longform)
+       ============================================ */
+    
+    .content-container {
+        width: 100%;
+        padding: 0 20px;
+        margin-left: auto !important; /* Reset desktop margin */
+        margin-right: auto !important;
+    }
+    
+    .content {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+    
+    .content h1 {
+        font-size: 32px;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+    }
+    
+    .content h2 {
+        font-size: 24px;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        margin-top: 30px;
+    }
+    
+    .content h3 {
+        font-size: 18px;
+        margin-bottom: 12px;
+        margin-top: 20px;
+    }
+    
+    .content p {
+        margin-bottom: 15px;
+    }
+    
+    .content ul, .content ol {
+        margin-left: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .content code {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+    
+    .content pre {
+        padding: 15px;
+        overflow-x: auto;
+        font-size: 11px;
+    }
+    
+    /* Document navigation - stack on mobile */
+    .doc-nav {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .doc-button {
+        width: 100%;
+        min-height: 50px;
+        font-size: 13px;
+        padding: 12px 20px;
+    }
+    
+    /* ============================================
+       SYNC POPUP - MOBILE
+       ============================================ */
+    
+    .sync-popup {
+        /* Full screen */
+        width: 100vw;
+        height: 100vh;
+    }
+    
+    .sync-image-container {
+        max-width: 95vw;
+        max-height: 95vh;
+        padding: 10px;
+    }
+    
+    .sync-timer {
+        font-size: 11px;
+        bottom: 20px;
+    }
+}
+
+/* ================================================
+   TOUCH-SPECIFIC BEHAVIORS
+   ================================================ */
+
+@media (hover: none) and (pointer: coarse) {
+    /* This targets touch devices specifically */
+    
+    /* Remove hover effects */
+    .gallery-tile:hover img,
+    .logo:hover,
+    .sync-button:hover,
+    .doc-button:hover,
+    .viewer-button:hover,
+    .menu-item:hover {
+        opacity: 1; /* No hover effect on touch */
+    }
+    
+    /* Larger tap targets universally */
+    a, button, .gallery-tile, .menu-item {
+        min-height: 44px; /* iOS recommended minimum */
+        min-width: 44px;
+    }
+    
+    /* Active states instead of hover */
+    .gallery-tile:active,
+    .menu-item:active,
+    .doc-button:active,
+    .viewer-button:active {
+        opacity: 0.7;
+    }
+}
+
+/* ================================================
+   VERY SMALL SCREENS (< 360px)
+   ================================================ */
+
+@media only screen and (max-width: 359px) {
+    .gallery-tile {
+        width: 100%;
+        min-width: 280px;
+        height: auto;
+        aspect-ratio: 1;
+    }
+    
+    .gallery-tile img {
+        width: 100%;
+        height: auto;
+    }
+    
+    .project-image {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .project-image img {
+        width: 240px;
+        height: 240px;
+    }
+}
+
+/* ================================================
+   LANDSCAPE MOBILE
+   ================================================ */
+
+@media only screen and (max-height: 500px) and (orientation: landscape) {
+    .logo {
+        top: 10px;
+        left: 10px;
+        width: 60px;
+        height: 60px;
+    }
+    
+    .logo img {
+        width: 60px;
+        height: 60px;
+        max-width: 60px;
+        max-height: 60px;
+    }
+    
+    .page-content {
+        padding-top: 100px;
+    }
+    
+    .viewer-controls {
+        flex-direction: row;
+        gap: 5px;
+    }
+    
+    .viewer-button {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+}
+
+/* ================================================
+   TABLET (768px - 1024px)
+   ================================================ */
+
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .gallery-grid {
+        /* 2 columns on tablet */
+        display: grid;
+        grid-template-columns: repeat(2, 360px);
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .content-container {
+        width: 90%;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .white-line {
+        width: 90%;
+        max-width: 800px;
+    }
+}
+
+/* ================================================
+   CRITICAL MOBILE FIXES
+   ================================================ */
+
+/* Prevent zoom on double-tap */
+button, a, img {
+    touch-action: manipulation;
+}
+
+/* Prevent text selection during pan */
+.image-viewer {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Smooth touch scrolling */
+.gallery-container,
+.content-container,
+.projects-container {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Maintain pixel rendering on all devices */
+img, canvas {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    -webkit-image-rendering: pixelated;
+}
+
+/* ================================================
+   NOTES:
+   - Never scale images (crop or pan only)
+   - Maintain 360px minimum for gallery tiles
+   - Larger touch targets (44px minimum)
+   - No hover effects on touch devices
+   - Simple window into full image for viewer
+   - Pan with touch drag, no pinch zoom
+   ================================================ */

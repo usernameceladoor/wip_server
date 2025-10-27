@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>M.CELADOOR</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        h1 {
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.4;
+            margin-bottom: 40px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .nav-link {
+            background: none;
+            border: 2px solid white;
+            color: white;
+            padding: 20px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 18px;
+            text-decoration: none;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            display: block;
+        }
+
+        .nav-link:active {
+            background: white;
+            color: #2E2E2E;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 12px;
+            opacity: 0.6;
+            text-align: center;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 40px;
+            }
+
+            .container {
+                text-align: center;
+            }
+
+            .desktop-notice {
+                background: rgba(255,255,255,0.1);
+                padding: 20px;
+                margin-bottom: 30px;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="assets/Polygon_8_sided.png" alt="Celadoor" class="logo">
+            <h1>M.CELADOOR</h1>
+            <p class="tagline">A generative photographer working at the intersection of imperfection and curiosity</p>
+        </header>
+
+        <nav class="nav-menu">
+            <a href="m-images.html" class="nav-link">IMAGES</a>
+            <a href="m-words.html" class="nav-link">WORDS</a>
+        </nav>
+
+        <footer class="footer">
+            <p>Mobile viewer for celadoor.com</p>
+            <p><a href="index.html">View desktop site</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple mobile detection for desktop redirect option
+        if (window.innerWidth >= 768 && !/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            const notice = document.createElement('div');
+            notice.className = 'desktop-notice';
+            notice.innerHTML = 'You appear to be on a desktop. <a href="index.html" style="color: white; text-decoration: underline;">View full site</a>';
+            document.querySelector('.header').appendChild(notice);
+        }
+    </script>
+</body>
+</html>

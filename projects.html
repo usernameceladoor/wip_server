@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Projects - Celadoor</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        img, canvas {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .logo {
+            position: fixed;
+            top: 175px;
+            left: 200px;
+            width: 180px;
+            height: 180px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover { opacity: 0.7; }
+
+        .logo img { width: 180px; height: 180px; max-width: 180px; max-height: 180px; display: block; }
+
+        .page-content { padding-top: 400px; }
+
+        .white-line { width: 1500px; height: 2px; background-color: white; margin: 0 auto 30px auto; }
+
+        .projects-container { width: 1500px; margin: 0 auto; padding-bottom: 100px; }
+
+        .project-row {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+
+        .project-image {
+            width: 360px;
+            height: 360px;
+            overflow: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .project-row:hover .project-image {
+            opacity: 0.7;
+        }
+
+        .project-image img { width: 360px; height: 360px; object-fit: cover; display: block; }
+
+        .project-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.3s;
+        }
+
+        .project-row:hover .project-text {
+            opacity: 0.9;
+        }
+
+        .project-text h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .project-text p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .project-loading {
+            width: 360px;
+            height: 360px;
+            background: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .sync-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: none;
+            border: none;
+            color: white;
+            font-family: 'Fira Mono', monospace;
+            font-size: 18px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: opacity 0.2s;
+        }
+
+        .sync-button:hover { opacity: 0.6; }
+
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            overflow: auto;
+            cursor: pointer;
+        }
+
+        .image-viewer img { max-width: none; max-height: none; display: block; position: absolute; top: 0; left: 0; }
+
+        .sync-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .sync-popup.visible { opacity: 1; }
+        .sync-popup.hidden { opacity: 0; }
+
+        .sync-image-container { max-width: 90vw; max-height: 90vh; display: flex; align-items: center; justify-content: center; }
+
+        .sync-image-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; display: block; }
+
+        .sync-timer {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-family: 'Fira Mono', monospace;
+            font-size: 12px;
+            opacity: 0.6;
+            z-index: 20001;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <button class="sync-button">SYNC</button>
+
+    <a href="index.html" class="logo">
+        <img src="assets/Polygon_8_sided.png" alt="Celadoor">
+    </a>
+
+    <div class="page-content">
+        <div class="white-line"></div>
+
+        <div class="projects-container" id="projects-container">
+            <!-- Projects loaded dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Project manifest - pairs images with markdown files
+        const PROJECTS = [
+            {
+                slug: 'interlocutor',
+                image: 'interlocutor.AVIF',
+                title: 'INTERLOCUTOR',
+                markdown: 'interlocutor.md'
+            },
+            {
+                slug: 'costanza',
+                image: 'costanza.AVIF',
+                title: 'COSTANZA',
+                markdown: 'costanza.md'
+            },
+            {
+                slug: 'nucleation',
+                image: 'nucleation.AVIF',
+                title: 'NUCLEATION',
+                markdown: 'nucleation.md'
+            },
+            {
+                slug: 'decay_poster',
+                image: 'decay_poster.AVIF',
+                title: 'DECAY POSTER',
+                markdown: 'decay_poster.md'
+            },
+            {
+                slug: 'the_last_frame_of_the_day',
+                image: 'the_last_frame_of_the_day.avif',
+                title: 'THE LAST FRAME OF THE DAY',
+                markdown: 'the_last_frame_of_the_day.md'
+            },
+            {
+                slug: 'panorama',
+                image: 'panorama.avif',
+                title: 'PANORAMA',
+                markdown: 'panorama.md'
+            }
+        ];
+
+        // Simple markdown parser - extracts first paragraph for description
+        function parseMarkdownDescription(markdown) {
+            // Remove markdown headings
+            let text = markdown.replace(/^#+\s+/gm, '');
+            // Remove bold/italic
+            text = text.replace(/\*\*?([^*]+)\*\*?/g, '$1');
+            // Get first paragraph
+            const paragraphs = text.split('\n\n').filter(p => p.trim());
+            return paragraphs[0] || 'No description available.';
+        }
+
+        // Load projects
+        async function loadProjects() {
+            const container = document.getElementById('projects-container');
+            if (!container) return;
+
+            for (const project of PROJECTS) {
+                const row = document.createElement('div');
+                row.className = 'project-row';
+                
+                // Link to PROJECT detail page with slug parameter
+                row.onclick = () => {
+                    window.location.href = `project.html?project=${project.slug}`;
+                };
+
+                // Image section
+                const imageDiv = document.createElement('div');
+                imageDiv.className = 'project-image';
+                
+                const img = document.createElement('img');
+                img.src = `images/projects/${project.image}`;
+                img.alt = project.title;
+                
+                img.onerror = function() {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'project-loading';
+                    placeholder.textContent = 'Image not found';
+                    placeholder.style.color = '#f44';
+                    imageDiv.innerHTML = '';
+                    imageDiv.appendChild(placeholder);
+                };
+
+                imageDiv.appendChild(img);
+
+                // Text section
+                const textDiv = document.createElement('div');
+                textDiv.className = 'project-text';
+
+                const title = document.createElement('h2');
+                title.textContent = project.title;
+
+                const description = document.createElement('p');
+                description.textContent = 'Loading description...';
+
+                textDiv.appendChild(title);
+                textDiv.appendChild(description);
+
+                // Assemble row
+                row.appendChild(imageDiv);
+                row.appendChild(textDiv);
+                container.appendChild(row);
+
+                // Load markdown description
+                try {
+                    const response = await fetch(`content/projects/${project.markdown}`);
+                    if (response.ok) {
+                        const markdown = await response.text();
+                        const desc = parseMarkdownDescription(markdown);
+                        description.textContent = desc;
+                    } else {
+                        // Fallback if markdown doesn't exist
+                        description.textContent = `${project.title} project. Click to view full project details.`;
+                    }
+                } catch (error) {
+                    console.warn(`Could not load ${project.markdown}:`, error);
+                    description.textContent = `${project.title} project. Click to view full project details.`;
+                }
+            }
+        }
+
+        function openImageViewer(url) {
+            const viewer = document.createElement('div');
+            viewer.className = 'image-viewer';
+            const img = document.createElement('img');
+            img.src = url;
+            viewer.appendChild(img);
+            viewer.onclick = () => viewer.remove();
+            document.body.appendChild(viewer);
+        }
+        
+        let syncPopup = null;
+        let syncTimer = null;
+
+        function openSyncPopup() {
+            if (syncPopup) closeSyncPopup();
+            const randomIndex = Math.floor(Math.random() * 10) + 1;
+            const imageUrl = `images/sync/sync_${String(randomIndex).padStart(3, '0')}.AVIF`;
+            const popup = document.createElement('div');
+            popup.className = 'sync-popup';
+            const container = document.createElement('div');
+            container.className = 'sync-image-container';
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            const timer = document.createElement('div');
+            timer.className = 'sync-timer';
+            timer.textContent = 'Click to close';
+            img.onerror = () => { container.innerHTML = '<div style="color:white;text-align:center;padding:40px;font-family:\'Fira Mono\',monospace;"><div style="font-size:48px;margin-bottom:20px;">⚠</div><div>SYNC IMAGE NOT FOUND</div></div>'; };
+            container.appendChild(img);
+            popup.appendChild(container);
+            popup.appendChild(timer);
+            popup.onclick = () => closeSyncPopup();
+            document.body.appendChild(popup);
+            syncPopup = popup;
+            requestAnimationFrame(() => popup.classList.add('visible'));
+            syncTimer = setTimeout(() => closeSyncPopup(), 10000);
+        }
+
+        function closeSyncPopup() {
+            if (!syncPopup) return;
+            if (syncTimer) clearTimeout(syncTimer);
+            syncPopup.classList.remove('visible');
+            syncPopup.classList.add('hidden');
+            setTimeout(() => {
+                if (syncPopup && syncPopup.parentNode) syncPopup.parentNode.removeChild(syncPopup);
+                syncPopup = null;
+            }, 500);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+            const btn = document.querySelector('.sync-button');
+            if (btn) btn.addEventListener('click', openSyncPopup);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && syncPopup) closeSyncPopup();
+        });
+    </script>
+</body>
+</html>

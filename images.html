@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Images - Celadoor</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        img, canvas {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Logo - SAME AS INDEX.HTML */
+        .logo {
+            position: fixed;
+            top: 175px;
+            left: 200px;
+            width: 180px;
+            height: 180px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo:hover { opacity: 0.7; }
+
+        .logo img {
+            width: 180px;
+            height: 180px;
+            max-width: 180px;
+            max-height: 180px;
+            display: block;
+        }
+
+        /* Banner - SAME POSITION AS INDEX.HTML */
+        .banner {
+            position: fixed;
+            top: 205px;
+            left: 420px;
+            z-index: 100;
+            font-size: 14px;
+            line-height: 1.4;
+            letter-spacing: 1px;
+            color: white;
+            width: 550px;
+            opacity: 0.8;
+        }
+
+        /* SYNC button */
+        .sync-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: none;
+            border: none;
+            color: white;
+            font-family: 'Fira Mono', monospace;
+            font-size: 18px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: opacity 0.2s;
+        }
+
+        .sync-button:hover { opacity: 0.6; }
+
+        /* Gallery layout */
+        .page-content {
+            padding-top: 400px;
+        }
+
+        .white-line {
+            width: 1500px;
+            height: 2px;
+            background-color: white;
+            margin: 0 auto 30px auto;
+        }
+
+        .gallery-container {
+            width: 1500px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 360px);
+            gap: 20px;
+        }
+
+        .gallery-tile {
+            width: 360px;
+            height: 360px;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            background: #444;
+        }
+
+        .gallery-tile img {
+            width: 360px;
+            height: 360px;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.2s;
+        }
+
+        .gallery-tile:hover img { opacity: 0.5; }
+
+        /* Hover overlay */
+        .tile-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: transparent;
+            color: white;
+            font-family: 'Fira Mono', monospace;
+            font-size: 12px;
+            padding: 15px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .gallery-tile:hover .tile-overlay { opacity: 1; }
+
+        .tile-filename {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .tile-info {
+            opacity: 0.7;
+            font-size: 10px;
+        }
+
+        /* Loading state */
+        .image-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #444;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .image-loading.error {
+            color: #f44;
+        }
+
+        /* Image viewer */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            overflow: auto;
+            cursor: pointer;
+        }
+
+        .viewer-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            max-width: none;
+            max-height: none;
+            display: block;
+        }
+
+        .viewer-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-size: 12px;
+            z-index: 10001;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 3px;
+            pointer-events: none;
+            display: none;
+        }
+
+        .viewer-info.visible { display: block; }
+        .viewer-info-label { opacity: 0.6; margin-right: 10px; }
+
+        /* Enhanced SYNC popup */
+        .sync-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .sync-popup.visible { opacity: 1; }
+        .sync-popup.hidden { opacity: 0; }
+
+        .sync-content-wrapper {
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .sync-image-container {
+            background: #2E2E2E; /* 18% gray */
+            padding: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .sync-image-container img {
+            max-width: calc(90vw - 40px);
+            max-height: calc(90vh - 200px);
+            width: auto;
+            height: auto;
+            display: block;
+        }
+
+        .sync-description {
+            background: #2E2E2E;
+            color: white;
+            padding: 20px 30px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 600px;
+            text-align: center;
+            border-radius: 4px;
+            opacity: 0.9;
+        }
+
+        .sync-timer {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-family: 'Fira Mono', monospace;
+            font-size: 12px;
+            opacity: 0.6;
+            z-index: 20001;
+            pointer-events: none;
+        }
+
+        /* Mobile enhancements */
+        @media (max-width: 768px) {
+            .banner { display: none; }
+            
+            .logo {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                width: 60px;
+                height: 60px;
+            }
+
+            .logo img {
+                width: 60px;
+                height: 60px;
+                max-width: 60px;
+                max-height: 60px;
+            }
+
+            .page-content {
+                padding-top: 100px;
+            }
+
+            .white-line {
+                width: 100%;
+                margin: 0 0 20px 0;
+            }
+
+            .gallery-container {
+                width: 100%;
+                padding: 0 20px;
+            }
+
+            .gallery-grid {
+                display: block;
+            }
+
+            .gallery-tile {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 1;
+                margin-bottom: 20px;
+                max-width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .gallery-tile img {
+                width: 100%;
+                height: 100%;
+            }
+
+            .gallery-tile:hover img { opacity: 1; }
+            .tile-overlay { display: none; }
+
+            .sync-description {
+                font-size: 12px;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+    <!-- Mobile enhancements -->
+    <script src="mobile.js"></script>
+</head>
+<body>
+    <button class="sync-button">SYNC</button>
+
+    <a href="index.html" class="logo">
+        <img src="assets/Polygon_8_sided.png" alt="Celadoor">
+    </a>
+    
+    <div class="banner">Images open pixel for pixel based on the display. To view the full image Ctrl/Click and open the image in new tab.</div>
+
+    <div class="page-content">
+        <div class="white-line"></div>
+        <div class="gallery-container">
+            <div class="gallery-grid" id="gallery"></div>
+        </div>
+    </div>
+
+    <script>
+        // Gallery images - FIXED CASE SENSITIVITY
+        const GALLERY_IMAGES = [
+            { index: 1, file: 'image001_decay_1.AVIF', title: 'Decay 1' },
+            { index: 2, file: 'image002_decay_2.AVIF', title: 'Decay 2' },
+            { index: 3, file: 'image003_decay_3.AVIF', title: 'Decay 3' },
+            { index: 4, file: 'image004_decay_4.AVIF', title: 'Decay 4' },
+            { index: 5, file: 'image005_decay_5.AVIF', title: 'Decay 5' },
+            { index: 6, file: 'image006_decay_6.AVIF', title: 'Decay 6' },
+            { index: 7, file: 'image007_decay_7.AVIF', title: 'Decay 7' },
+            { index: 8, file: 'image008_decay_8.AVIF', title: 'Decay 8' },
+            { index: 9, file: 'image009_decay_9.AVIF', title: 'Decay 9' },
+            { index: 10, file: 'image010_decay_berlin.AVIF', title: 'Decay Berlin' },
+            { index: 11, file: 'image011_decay_reflect.AVIF', title: 'Decay Reflect' },
+            { index: 12, file: 'image012_hic_sunt_dracones.AVIF', title: 'Hic Sunt Dracones' },
+            { index: 13, file: 'image013_hic_ardens.AVIF', title: 'Hic Ardens' },
+            { index: 14, file: 'image014_tension_one.AVIF', title: 'Tension One' },
+            { index: 15, file: 'image015_οἶνοψ_πόντος.AVIF', title: 'οἶνοψ πόντος' },
+            { index: 16, file: 'image016_MediterraneanXplorers2025.AVIF', title: 'MediterraneanXplorers2025' }
+        ];
+
+        let currentViewer = null;
+
+        // Load gallery
+        function loadGallery() {
+            const gallery = document.getElementById('gallery');
+            if (!gallery) return;
+
+            GALLERY_IMAGES.forEach((image, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'gallery-tile';
+                
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'image-loading';
+                loadingDiv.textContent = 'Loading...';
+                tile.appendChild(loadingDiv);
+
+                const img = document.createElement('img');
+                img.alt = image.title;
+                img.loading = 'lazy';
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'tile-overlay';
+                overlay.innerHTML = `
+                    <div class="tile-filename">${image.file}</div>
+                    <div class="tile-info">INDEX: ${image.index} | TITLE: ${image.title}</div>
+                `;
+
+                img.onload = function() {
+                    loadingDiv.style.opacity = '0';
+                    setTimeout(() => loadingDiv.remove(), 300);
+                };
+                
+                img.onerror = function() {
+                    loadingDiv.textContent = 'Failed to load';
+                    loadingDiv.classList.add('error');
+                };
+
+                img.src = 'images/images/' + image.file;
+
+                tile.appendChild(img);
+                tile.appendChild(overlay);
+                tile.onclick = () => openImageViewer(image);
+
+                gallery.appendChild(tile);
+            });
+        }
+
+        // Image viewer
+        function openImageViewer(imageData) {
+            if (currentViewer) currentViewer.remove();
+
+            const viewer = document.createElement('div');
+            viewer.className = 'image-viewer';
+
+            const img = document.createElement('img');
+            img.className = 'viewer-image';
+            img.src = 'images/images/' + imageData.file;
+
+            const info = document.createElement('div');
+            info.className = 'viewer-info';
+            info.innerHTML = `
+                <span class="viewer-info-label">INDEX:</span>${imageData.index}
+                <span style="margin-left: 20px;" class="viewer-info-label">TITLE:</span>${imageData.title}
+                <span style="margin-left: 20px;" class="viewer-info-label">FILE:</span>${imageData.file}
+            `;
+
+            viewer.appendChild(img);
+            viewer.appendChild(info);
+
+            img.onload = () => {
+                info.classList.add('visible');
+            };
+
+            viewer.onclick = (e) => {
+                if (e.target === viewer || e.target === img) {
+                    viewer.remove();
+                    currentViewer = null;
+                }
+            };
+
+            document.body.appendChild(viewer);
+            currentViewer = viewer;
+
+            viewer.dataset.currentIndex = GALLERY_IMAGES.findIndex(img => img.file === imageData.file);
+        }
+
+        // Navigation
+        function navigateImage(direction) {
+            if (!currentViewer) return;
+
+            const currentIndex = parseInt(currentViewer.dataset.currentIndex);
+            let newIndex = currentIndex + direction;
+
+            if (newIndex < 0) newIndex = GALLERY_IMAGES.length - 1;
+            if (newIndex >= GALLERY_IMAGES.length) newIndex = 0;
+
+            openImageViewer(GALLERY_IMAGES[newIndex]);
+        }
+
+        // Enhanced SYNC popup
+        let syncPopup = null;
+        let syncTimer = null;
+
+        function openSyncPopup() {
+            if (syncPopup) closeSyncPopup();
+            const randomIndex = Math.floor(Math.random() * 10) + 1;
+            const imageUrl = `images/sync/sync_${String(randomIndex).padStart(3, '0')}.AVIF`;
+            
+            const popup = document.createElement('div');
+            popup.className = 'sync-popup';
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'sync-content-wrapper';
+            
+            const container = document.createElement('div');
+            container.className = 'sync-image-container';
+            
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            
+            const description = document.createElement('div');
+            description.className = 'sync-description';
+            description.innerHTML = 'SYNC - Press SYNC and get a random screen cap from the early days of Hic et Nunc in 2021. Things I grabbed in the moment as notes or reminders. Many works from other artists.';
+            
+            const timer = document.createElement('div');
+            timer.className = 'sync-timer';
+            timer.textContent = 'Click to close';
+            
+            img.onerror = () => { 
+                container.innerHTML = '<div style="color:white;text-align:center;padding:40px;font-family:\'Fira Mono\',monospace;"><div style="font-size:48px;margin-bottom:20px;">⚠</div><div>SYNC IMAGE NOT FOUND</div></div>'; 
+            };
+            
+            container.appendChild(img);
+            wrapper.appendChild(container);
+            wrapper.appendChild(description);
+            popup.appendChild(wrapper);
+            popup.appendChild(timer);
+            
+            popup.onclick = () => closeSyncPopup();
+            
+            document.body.appendChild(popup);
+            syncPopup = popup;
+            
+            requestAnimationFrame(() => popup.classList.add('visible'));
+            syncTimer = setTimeout(() => closeSyncPopup(), 10000);
+        }
+
+        function closeSyncPopup() {
+            if (!syncPopup) return;
+            if (syncTimer) clearTimeout(syncTimer);
+            syncPopup.classList.remove('visible');
+            syncPopup.classList.add('hidden');
+            setTimeout(() => {
+                if (syncPopup && syncPopup.parentNode) syncPopup.parentNode.removeChild(syncPopup);
+                syncPopup = null;
+            }, 500);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGallery();
+            
+            const btn = document.querySelector('.sync-button');
+            if (btn) btn.addEventListener('click', openSyncPopup);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (currentViewer) {
+                if (e.key === 'ArrowLeft') navigateImage(-1);
+                else if (e.key === 'ArrowRight') navigateImage(1);
+                else if (e.key === 'Escape') {
+                    currentViewer.remove();
+                    currentViewer = null;
+                }
+            }
+            if (e.key === 'Escape' && syncPopup) closeSyncPopup();
+        });
+    </script>
+</body>
+</html>

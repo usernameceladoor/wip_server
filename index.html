@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>CELADOOR</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+        
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Bold.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Bold.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Bold.ttf') format('truetype');
+            font-weight: 700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        img, canvas {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Background - STATIC, never moves */
+        #background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        #background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        /* Logo - 200px left, 175px top, 180px wide */
+        .logo {
+            position: fixed;
+            top: 175px;
+            left: 200px;
+            z-index: 100;
+            width: 180px;
+            height: 180px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover { opacity: 0.7; }
+
+        /* Banner - to the right of logo */
+        .banner {
+            position: fixed;
+            top: 205px;
+            left: 420px;
+            z-index: 100;
+            font-size: 14px;
+            line-height: 1.4;
+            letter-spacing: 1px;
+            color: white;
+            width: 440px;
+            opacity: 0.8;
+        }
+
+        /* CELADOOR - centered on logo */
+        .title {
+            position: fixed;
+            top: 390px;
+            left: 290px;
+            transform: translateX(-50%);
+            z-index: 100;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 4px;
+        }
+
+        /* Skeleton - 5 segments with gaps */
+        .skeleton-container {
+            position: fixed;
+            top: 455px;
+            left: 144.5px;
+            z-index: 100;
+        }
+
+        .skeleton-segment {
+            width: 2px;
+            height: 42px;
+            background-color: white;
+            position: relative;
+            margin-bottom: 42px;
+        }
+
+        .skeleton-segment:last-child {
+            margin-bottom: 0;
+        }
+
+        .skeleton-longform {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .skeleton-longform:hover { opacity: 0.6; }
+
+        /* Ribs on segments 2-5 */
+        .skeleton-rib {
+            position: absolute;
+            height: 2px;
+            width: 35px;
+            background-color: white;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Menu items */
+        .nav-menu {
+            position: fixed;
+            left: 184.5px;
+            z-index: 100;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 42px;
+            font-weight: 400;
+            letter-spacing: 3px;
+            transition: opacity 0.2s;
+            position: absolute;
+            transform: translateY(-50%);
+        }
+
+        /* Adjusted positions */
+        .nav-menu a:nth-child(1) { top: 560px; }
+        .nav-menu a:nth-child(2) { top: 644px; }
+        .nav-menu a:nth-child(3) { top: 728px; }
+        .nav-menu a:nth-child(4) { top: 812px; }
+
+        .nav-menu a:hover { opacity: 0.6; }
+
+        #avif-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #ff4444;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            z-index: 10000;
+            font-size: 14px;
+        }
+
+        /* Simple fallback background */
+        .fallback-background {
+            width: 100%;
+            height: 100%;
+            background-color: #2E2E2E;
+        }
+    </style>
+</head>
+<body>
+    <div id="avif-warning" style="display: none;">
+        <p>Your browser doesn't support AVIF images. Please use Chrome 85+, Firefox 93+, or Safari 16+</p>
+    </div>
+
+    <div id="background-container">
+        <div id="background-image" class="fallback-background"></div>
+    </div>
+
+    <a href="index.html">
+        <img src="assets/Polygon_8_sided.png" alt="Celadoor" class="logo">
+    </a>
+
+    <h1 class="title">CELADOOR</h1>
+
+    <div class="banner" id="banner"></div>
+
+    <div class="skeleton-container">
+        <div class="skeleton-segment skeleton-longform" onclick="window.location.href='longform.html'"></div>
+        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+        <div class="skeleton-segment"><div class="skeleton-rib"></div></div>
+    </div>
+
+    <nav class="nav-menu">
+        <a href="notes.html">NOTES</a>
+        <a href="images.html">IMAGES</a>
+        <a href="projects.html">PROJECTS</a>
+        <a href="links.html">LINKS</a>
+    </nav>
+
+    <script>
+        function checkAVIFSupport() {
+            return new Promise((resolve) => {
+                const avif = new Image();
+                avif.src = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=';
+                avif.onload = () => resolve(true);
+                avif.onerror = () => resolve(false);
+            });
+        }
+
+        async function loadBackgroundImage() {
+            const supported = await checkAVIFSupport();
+            
+            if (!supported) {
+                document.getElementById('avif-warning').style.display = 'block';
+                return;
+            }
+
+            const img = new Image();
+            img.src = 'images/home/web_background.AVIF';
+            
+            img.onload = function() {
+                const container = document.getElementById('background-image');
+                const imgElement = document.createElement('img');
+                imgElement.src = this.src;
+                imgElement.style.cssText = 'position: fixed; top: 0; left: 0;';
+                container.replaceWith(imgElement);
+                console.log('Background loaded:', this.naturalWidth + 'x' + this.naturalHeight);
+            };
+
+            img.onerror = function() {
+                console.log('Background image not found, using fallback color');
+            };
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadBackgroundImage();
+            
+            // Banner rotation - properly formatted text
+            const bannerPhrases = [
+                "A generative photographer working at the intersection of imperfection and curiosity. I take pictures of moments that never happened and landscapes that don't exist.",
+                "Fresh Swaps for Curious Aubergines",
+                "Exploiter of accidental generative systems offering haphazard results with a maximum of frustration"
+            ];
+            
+            let currentPhrase = 0;
+            const banner = document.getElementById('banner');
+            
+            function rotateBanner() {
+                banner.style.opacity = '0';
+                setTimeout(() => {
+                    banner.textContent = bannerPhrases[currentPhrase];
+                    banner.style.opacity = '0.8';
+                    currentPhrase = (currentPhrase + 1) % bannerPhrases.length;
+                }, 300);
+            }
+            
+            // Initial display
+            rotateBanner();
+            // Rotate every 8 seconds
+            setInterval(rotateBanner, 8000);
+        });
+    </script>
+</body>
+</html>

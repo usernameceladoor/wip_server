@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Project - Celadoor</title>
+    
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        img, canvas {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Logo */
+        .logo {
+            position: fixed;
+            top: 175px;
+            left: 200px;
+            width: 180px;
+            height: 180px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover { opacity: 0.7; }
+
+        .logo img {
+            width: 180px;
+            height: 180px;
+            max-width: 180px;
+            max-height: 180px;
+            display: block;
+        }
+
+        .page-content {
+            padding-top: 400px;
+        }
+
+        /* Project header - aligned to columns 2-4 */
+        .project-header {
+            width: 1100px;
+            margin-left: 400px;
+            margin-right: auto;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 20px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .project-title {
+            font-size: 48px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .project-statement {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            max-width: 1100px;
+            opacity: 0.9;
+        }
+
+        .project-statement p {
+            margin-bottom: 15px;
+        }
+
+        .project-statement h2,
+        .project-statement h3 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .white-line {
+            width: 1100px;
+            height: 2px;
+            background-color: white;
+            margin-left: 400px;
+            margin-right: auto;
+            margin-bottom: 30px;
+        }
+
+        /* Gallery container - COLUMNS 2-4 OF THE GRID */
+        .gallery-container {
+            width: 1100px; /* 3 columns × 360px + 2 gaps × 20px */
+            margin-left: 400px; /* Aligned to column 2 start */
+            margin-right: auto;
+            padding-bottom: 100px;
+        }
+
+        /* Gallery grid - COLUMNS 2, 3, 4 ONLY */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 360px); /* 3 columns, not 4 */
+            gap: 20px;
+        }
+
+        .gallery-tile {
+            width: 360px;
+            height: 360px;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            background: #444;
+        }
+
+        .gallery-tile img {
+            width: 360px;
+            height: 360px;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.2s;
+        }
+
+        .gallery-tile:hover img { opacity: 0.5; }
+
+        .tile-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: transparent;
+            color: white;
+            font-family: 'Fira Mono', monospace;
+            font-size: 12px;
+            padding: 15px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .gallery-tile:hover .tile-overlay { opacity: 1; }
+
+        .tile-filename {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tile-metadata {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .tile-loading {
+            width: 360px;
+            height: 360px;
+            background: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-family: 'Fira Mono', monospace;
+            font-size: 12px;
+        }
+
+        /* SYNC button */
+        .sync-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: none;
+            border: none;
+            color: white;
+            font-family: 'Fira Mono', monospace;
+            font-size: 18px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: opacity 0.2s;
+        }
+
+        .sync-button:hover { opacity: 0.6; }
+
+        /* Image viewer */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            overflow: auto;
+            cursor: default;
+        }
+
+        .image-viewer img {
+            max-width: none;
+            max-height: none;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .viewer-controls {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            display: flex;
+            gap: 20px;
+            pointer-events: none;
+        }
+
+        .viewer-button {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 1px solid white;
+            padding: 10px 20px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            pointer-events: auto;
+        }
+
+        .viewer-button:hover { opacity: 0.7; }
+        .viewer-button:disabled { opacity: 0.3; cursor: default; }
+
+        .viewer-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            font-size: 12px;
+            border-radius: 4px;
+            z-index: 10001;
+            transition: opacity 0.3s;
+        }
+
+        .viewer-hint.hidden { opacity: 0; }
+
+        .viewer-info {
+            position: fixed;
+            top: 100px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            font-size: 12px;
+            z-index: 10001;
+            display: none;
+            line-height: 1.8;
+        }
+
+        .viewer-info.visible { display: block; }
+        .viewer-info-label { font-weight: bold; margin-right: 10px; }
+
+        /* Sync popup */
+        .sync-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .sync-popup.visible { opacity: 1; }
+        .sync-popup.hidden { opacity: 0; pointer-events: none; }
+
+        .sync-image-container {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .sync-image-container img {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+        }
+
+        .sync-timer {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="logo">
+        <img src="assets/Polygon_8_sided.png" alt="Celadoor">
+    </a>
+
+    <button class="sync-button">SYNC</button>
+
+    <div class="page-content">
+        <div class="project-header">
+            <a href="projects.html" class="back-link">← Back to Projects</a>
+            <h1 class="project-title" id="project-title">PROJECT</h1>
+            <div class="project-statement" id="project-statement"></div>
+        </div>
+
+        <div class="white-line"></div>
+
+        <!-- Gallery grid using columns 2, 3, 4 of THE GRID -->
+        <div class="gallery-container">
+            <div class="gallery-grid" id="gallery">
+                <!-- Images will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get project from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectSlug = urlParams.get('project');
+
+        // Image manifest - real file structure
+        const IMAGE_MANIFEST = {
+            'interlocutor': [
+                'image001_interlocutor_23.avif',
+                'image002_interlocutor_1.avif', 
+                'image003_interlocutor_2.avif',
+                'image004_interlocutor_3.avif',
+                'image005_interlocutor_4.avif',
+                'image006_interlocutor_5.avif',
+                'image007_interlocutor_6.avif',
+                'image008_interlocutor_7.avif',
+                'image009_interlocutor_8.avif',
+                'image010_interlocutor_9.avif',
+                'image011_interlocutor_10.avif',
+                'image012_interlocutor_11.avif',
+                'image013_interlocutor_12.avif',
+                'image014_interlocutor_13.avif',
+                'image015_interlocutor_14.avif',
+                'image016_interlocutor_15.avif',
+                'image017_interlocutor_16.avif',
+                'image018_interlocutor_17.avif',
+                'image019_interlocutor_18.avif',
+                'image020_interlocutor_19.avif',
+                'image021_interlocutor_20.avif',
+                'image022_interlocutor_21.avif',
+                'image023_interlocutor_22.avif'
+            ],
+            'costanza': [
+                'image001_costanza_0.avif',
+                'image002_costanza_2.avif',
+                'image003_costanza_3.avif',
+                'image004_costanza_4.avif',
+                'image005_costanza_1.avif'
+            ],
+            'nucleation': [
+                'image001_nucleation_24.avif',
+                'image002_nucleation_1.avif',
+                'image003_nucleation_2.avif',
+                'image004_nucleation_3.avif',
+                'image005_nucleation_4.avif',
+                'image006_nucleation_5.avif',
+                'image007_nucleation_6.avif',
+                'image008_nucleation_7.avif',
+                'image009_nucleation_8.avif',
+                'image010_nucleation_9.avif',
+                'image011_nucleation_10.avif',
+                'image012_nucleation_11.avif',
+                'image013_nucleation_12.avif',
+                'image014_nucleation_13.avif',
+                'image015_nucleation_14.avif',
+                'image016_nucleation_15.avif',
+                'image017_nucleation_16.avif',
+                'image018_nucleation_17.avif',
+                'image019_nucleation_18.avif',
+                'image020_nucleation_19.avif',
+                'image021_nucleation_20.avif',
+                'image022_nucleation_21.avif',
+                'image023_nucleation_22.avif',
+            ],
+            'decay_poster': [
+                'image001_decay_poster.avif'
+            ],
+            'the_last_frame_of_the_day': [
+                'image001_the_last_frame_of_the_day.AVIF'
+            ],
+            'panorama': [
+                'image001_IMG_5532.avif',
+                'image002_IMG_5598.avif',
+                'image003_IMG_5601.avif',
+                'image004_IMG_5627.avif',
+                'image005_IMG_5638.avif',
+                'image006_IMG_5661.avif',
+                'image007_IMG_5662.avif',
+                'image008_IMG_5680.avif',
+                'image009_IMG_5685.avif'
+            ]   
+
+        };
+
+        // Project configs
+        const PROJECT_DATA = {
+            'interlocutor': {
+                title: 'INTERLOCUTOR',
+                folder: 'interlocutor',
+                markdown: 'interlocutor.md'
+            },
+            'costanza': {
+                title: 'COSTANZA',
+                folder: 'costanza', 
+                markdown: 'costanza.md'
+            },
+            'nucleation': {
+                title: 'NUCLEATION',
+                folder: 'nucleation',
+                markdown: 'nucleation.md'
+            },
+            'decay_poster': {
+                title: 'DECAY POSTER',
+                folder: 'decay_poster',
+                markdown: 'decay_poster.md'
+            },
+            'the_last_frame_of_the_day': {
+                title: 'THE LAST FRAME OF THE DAY',
+                folder: 'the_last_frame_of_the_day',
+                markdown: 'the_last_frame_of_the_day.md'
+            },
+            'panorama': {
+                title: 'PANORAMA',
+                folder: 'panorama',
+                markdown: 'panorama.md'
+            }
+        };
+
+        let currentProject = null;
+        let projectImages = [];
+        let currentViewer = null;
+
+        // Get project images from manifest
+        function getProjectImages(slug) {
+            return IMAGE_MANIFEST[slug] || [];
+        }
+
+        // Load actual image with fallback
+        async function loadProjectImage(basePath, filename, callback) {
+            const img = new Image();
+            img.onload = () => callback(img);
+            img.onerror = () => {
+                // Try different extensions
+                const extensions = ['.avif', '.AVIF', '.jpg', '.png'];
+                let extIndex = 0;
+                
+                function tryNext() {
+                    if (extIndex >= extensions.length) {
+                        callback(null);
+                        return;
+                    }
+                    
+                    const nameWithoutExt = filename.replace(/\.[^.]+$/, '');
+                    img.src = basePath + nameWithoutExt + extensions[extIndex];
+                    extIndex++;
+                }
+                
+                img.onerror = tryNext;
+                tryNext();
+            };
+            
+            img.src = basePath + filename;
+        }
+
+        // Initialize project
+        async function initProject() {
+            if (!projectSlug || !PROJECT_DATA[projectSlug]) {
+                window.location.href = 'projects.html';
+                return;
+            }
+
+            currentProject = PROJECT_DATA[projectSlug];
+            document.title = `${currentProject.title} - Celadoor`;
+            document.getElementById('project-title').textContent = currentProject.title;
+
+            // Load markdown statement
+            try {
+                const response = await fetch(`content/projects/${currentProject.markdown}`);
+                if (response.ok) {
+                    const markdown = await response.text();
+                    const statement = parseMarkdownStatement(markdown);
+                    if (statement) {
+                        document.getElementById('project-statement').innerHTML = statement;
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not load project statement:', error);
+            }
+
+            // Build image array from manifest
+            const imageFiles = getProjectImages(projectSlug);
+            projectImages = imageFiles.map((filename, idx) => ({
+                index: idx + 1,
+                filename: filename,
+                folder: currentProject.folder
+            }));
+
+            // Load gallery
+            loadGallery();
+        }
+
+        // Parse markdown for display (simple version)
+        function parseMarkdownStatement(markdown) {
+            // Remove first heading if present
+            let text = markdown.replace(/^#\s+[^\n]+\n\n/, '');
+            
+            // Convert markdown to HTML (basic)
+            text = text.replace(/^##\s+(.+)$/gm, '<h3>$1</h3>');
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            text = text.replace(/\n\n/g, '</p><p>');
+            
+            return '<p>' + text + '</p>';
+        }
+
+        // Load gallery
+        function loadGallery() {
+            const gallery = document.getElementById('gallery');
+            if (!gallery) return;
+            
+            projectImages.forEach((img, idx) => {
+                const tile = document.createElement('div');
+                tile.className = 'gallery-tile';
+                tile.onclick = () => openImageViewer(idx);
+                
+                const basePath = `images/projects/${img.folder}/`;
+                
+                // Load exact filename from manifest
+                loadProjectImage(basePath, img.filename, (imgElement) => {
+                    if (!imgElement) {
+                        tile.innerHTML = '<div class="tile-loading">Image not found</div>';
+                        return;
+                    }
+                    
+                    imgElement.alt = `${currentProject.title} ${img.index}`;
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'tile-overlay';
+                    
+                    const filename = document.createElement('div');
+                    filename.className = 'tile-filename';
+                    filename.textContent = img.filename;
+                    
+                    const metadata = document.createElement('div');
+                    metadata.className = 'tile-metadata';
+                    metadata.textContent = `${imgElement.naturalWidth}×${imgElement.naturalHeight}px`;
+                    
+                    overlay.appendChild(filename);
+                    overlay.appendChild(metadata);
+                    
+                    tile.appendChild(imgElement);
+                    tile.appendChild(overlay);
+                });
+                
+                gallery.appendChild(tile);
+            });
+        }
+        
+        // Special handler for panoramic images
+        function openPanoramicViewer(imageSrc, imageTitle) {
+            const viewer = document.createElement('div');
+            viewer.className = 'panoramic-viewer';
+            viewer.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: #000;
+                z-index: 10000;
+                overflow-x: auto;
+                overflow-y: hidden;
+                cursor: grab;
+            `;
+            
+            const img = document.createElement('img');
+            img.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: auto;
+                max-width: none;
+                max-height: none;
+                image-rendering: pixelated;
+                image-rendering: -moz-crisp-edges;
+                image-rendering: crisp-edges;
+            `;
+            
+            img.src = imageSrc;
+            
+            // Info overlay
+            const info = document.createElement('div');
+            info.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                color: white;
+                font-family: 'Fira Mono', monospace;
+                font-size: 14px;
+                background: rgba(0,0,0,0.7);
+                padding: 10px;
+                border-radius: 3px;
+                z-index: 10001;
+            `;
+            info.innerHTML = `${imageTitle}<br><span style="opacity:0.6;font-size:12px;">← → to scroll | ESC to close</span>`;
+            
+            // Close button
+            const closeBtn = document.createElement('div');
+            closeBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                color: white;
+                font-family: 'Fira Mono', monospace;
+                font-size: 24px;
+                cursor: pointer;
+                background: rgba(0,0,0,0.7);
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 3px;
+                z-index: 10001;
+            `;
+            closeBtn.textContent = '×';
+            closeBtn.onclick = () => viewer.remove();
+            
+            viewer.appendChild(img);
+            viewer.appendChild(info);
+            viewer.appendChild(closeBtn);
+            
+            // Dragging functionality
+            let isDragging = false;
+            let startX;
+            let scrollLeft;
+            
+            viewer.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                viewer.style.cursor = 'grabbing';
+                startX = e.pageX - viewer.offsetLeft;
+                scrollLeft = viewer.scrollLeft;
+            });
+            
+            viewer.addEventListener('mouseleave', () => {
+                isDragging = false;
+                viewer.style.cursor = 'grab';
+            });
+            
+            viewer.addEventListener('mouseup', () => {
+                isDragging = false;
+                viewer.style.cursor = 'grab';
+            });
+            
+            viewer.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - viewer.offsetLeft;
+                const walk = (x - startX) * 2;
+                viewer.scrollLeft = scrollLeft - walk;
+            });
+            
+            // Keyboard navigation
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    viewer.remove();
+                    document.removeEventListener('keydown', handleKeydown);
+                } else if (e.key === 'ArrowLeft') {
+                    viewer.scrollLeft -= 100;
+                } else if (e.key === 'ArrowRight') {
+                    viewer.scrollLeft += 100;
+                }
+            };
+            
+            document.addEventListener('keydown', handleKeydown);
+            
+            // On image load, scroll to start
+            img.onload = () => {
+                viewer.scrollLeft = 0;
+                // Show dimensions
+                info.innerHTML += `<br><span style="opacity:0.6;font-size:12px;">Dimensions: ${img.naturalWidth} × ${img.naturalHeight}px</span>`;
+            };
+            
+            document.body.appendChild(viewer);
+        }
+        
+        // Image viewer - scoped to project images only
+        function openImageViewer(index) {
+            if (currentViewer) currentViewer.remove();
+
+            const imageData = projectImages[index];
+            const basePath = `images/projects/${imageData.folder}/`;
+            
+            // Check if this is the panoramic image
+            if (imageData.filename === 'image001_the_last_frame_of_the_day.AVIF') {
+                const fullPath = basePath + imageData.filename;
+                openPanoramicViewer(fullPath, currentProject.title + ' - ' + imageData.filename);
+                return;
+            }
+            
+            const viewer = document.createElement('div');
+            viewer.className = 'image-viewer';
+            viewer.setAttribute('tabindex', '0');
+            
+            // Load exact filename
+            loadProjectImage(basePath, imageData.filename, (img) => {
+                if (!img) {
+                    viewer.innerHTML = '<div style="color:white; padding:50px;">Image not found</div>';
+                    return;
+                }
+                viewer.appendChild(img);
+            });
+            
+            const controls = document.createElement('div');
+            controls.className = 'viewer-controls';
+            
+            const backBtn = document.createElement('button');
+            backBtn.className = 'viewer-button';
+            backBtn.textContent = '← BACK TO PROJECT';
+            backBtn.onclick = (e) => {
+                e.stopPropagation();
+                viewer.remove();
+                currentViewer = null;
+            };
+            
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'viewer-button';
+            prevBtn.textContent = '← PREVIOUS';
+            prevBtn.disabled = index === 0;
+            prevBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (index > 0) openImageViewer(index - 1);
+            };
+            
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'viewer-button';
+            nextBtn.textContent = 'NEXT →';
+            nextBtn.disabled = index === projectImages.length - 1;
+            nextBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (index < projectImages.length - 1) openImageViewer(index + 1);
+            };
+            
+            controls.appendChild(backBtn);
+            controls.appendChild(prevBtn);
+            controls.appendChild(nextBtn);
+            
+            const hint = document.createElement('div');
+            hint.className = 'viewer-hint';
+            hint.textContent = 'ESC to close | ← → to navigate | i for info';
+            
+            const info = document.createElement('div');
+            info.className = 'viewer-info';
+            
+            // Create a proper img element for the viewer
+            const viewerImg = document.createElement('img');
+            loadProjectImage(basePath, imageData.filename, (loadedImg) => {
+                if (!loadedImg) return;
+                viewerImg.src = loadedImg.src;
+                viewerImg.onload = function() {
+                    info.innerHTML = `
+                        <div><span class="viewer-info-label">PROJECT:</span>${currentProject.title}</div>
+                        <div><span class="viewer-info-label">FILE:</span>${imageData.filename}</div>
+                        <div><span class="viewer-info-label">SIZE:</span>${this.naturalWidth}×${this.naturalHeight}px</div>
+                        <div><span class="viewer-info-label">INDEX:</span>${index + 1} of ${projectImages.length}</div>
+                    `;
+                };
+                viewer.appendChild(viewerImg);
+            });
+            
+            viewer.appendChild(controls);
+            viewer.appendChild(hint);
+            viewer.appendChild(info);
+            
+            viewer.onclick = (e) => {
+                if (e.target === viewer || e.target.tagName === 'IMG') {
+                    viewer.remove();
+                    currentViewer = null;
+                }
+            };
+            
+            viewer.onkeydown = (e) => {
+                switch(e.key) {
+                    case 'Escape':
+                        viewer.remove();
+                        currentViewer = null;
+                        break;
+                    case 'ArrowLeft':
+                        if (index > 0) openImageViewer(index - 1);
+                        break;
+                    case 'ArrowRight':
+                        if (index < projectImages.length - 1) openImageViewer(index + 1);
+                        break;
+                    case 'i':
+                    case 'I':
+                        info.classList.toggle('visible');
+                        break;
+                }
+                showHint();
+            };
+            
+            viewer.onmousemove = showHint;
+            
+            function showHint() {
+                hint.classList.remove('hidden');
+                clearTimeout(hint.hideTimeout);
+                hint.hideTimeout = setTimeout(() => hint.classList.add('hidden'), 10000);
+            }
+            
+            document.body.appendChild(viewer);
+            viewer.focus();
+            currentViewer = viewer;
+            showHint();
+        }
+        
+        // SYNC popup
+        let syncPopup = null;
+        let syncTimer = null;
+
+        function openSyncPopup() {
+            if (syncPopup) closeSyncPopup();
+            const randomIndex = Math.floor(Math.random() * 10) + 1;
+            const imageUrl = `images/sync/sync_${String(randomIndex).padStart(3, '0')}.AVIF`;
+            const popup = document.createElement('div');
+            popup.className = 'sync-popup';
+            const container = document.createElement('div');
+            container.className = 'sync-image-container';
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            const timer = document.createElement('div');
+            timer.className = 'sync-timer';
+            timer.textContent = 'Click to close';
+            img.onerror = () => {
+                container.innerHTML = '<div style="color:white;text-align:center;padding:40px;"><div style="font-size:48px;">⚠</div><div>SYNC IMAGE NOT FOUND</div></div>';
+            };
+            container.appendChild(img);
+            popup.appendChild(container);
+            popup.appendChild(timer);
+            popup.onclick = () => closeSyncPopup();
+            document.body.appendChild(popup);
+            syncPopup = popup;
+            requestAnimationFrame(() => popup.classList.add('visible'));
+            syncTimer = setTimeout(() => closeSyncPopup(), 10000);
+        }
+
+        function closeSyncPopup() {
+            if (!syncPopup) return;
+            if (syncTimer) clearTimeout(syncTimer);
+            syncPopup.classList.remove('visible');
+            syncPopup.classList.add('hidden');
+            setTimeout(() => {
+                if (syncPopup && syncPopup.parentNode) syncPopup.parentNode.removeChild(syncPopup);
+                syncPopup = null;
+            }, 500);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initProject();
+            const btn = document.querySelector('.sync-button');
+            if (btn) btn.addEventListener('click', openSyncPopup);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && syncPopup) closeSyncPopup();
+        });
+    </script>
+    
+    <!-- Add scroll behavior for consistent logo/banner dimming -->
+    <script src="js/scroll-behavior.js"></script>
+</body>
+</html>

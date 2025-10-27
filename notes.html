@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes - Celadoor</title>
+    <style>
+        @font-face {
+            font-family: 'Fira Mono';
+            src: url('assets/fonts/FiraMono-Regular.woff2') format('woff2'),
+                 url('assets/fonts/FiraMono-Regular.woff') format('woff'),
+                 url('assets/fonts/FiraMono-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Fira Mono', monospace;
+            background-color: #2E2E2E;
+            color: white;
+        }
+
+        .logo {
+            position: fixed;
+            top: 175px;
+            left: 200px;
+            width: 180px;
+            height: 180px;
+            z-index: 1000;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover { opacity: 0.7; }
+        .logo img { width: 180px; height: 180px; max-width: 180px; max-height: 180px; display: block; }
+
+        .page-content { padding-top: 400px; padding-bottom: 100px; }
+        .white-line { 
+            width: 1100px; 
+            height: 2px; 
+            background-color: white; 
+            margin-left: 400px; 
+            margin-right: auto;
+            margin-bottom: 30px;
+        }
+        .content-container { 
+            width: 1100px; /* Columns 2-4: 3×360 + 2×20 = 1140px, use 1100 for padding */
+            margin-left: 400px; /* Align with column 2 start */
+            margin-right: auto;
+        }
+        .content { font-size: 16px; line-height: 1.8; }
+
+        /* Markdown styling */
+        .content h1 { font-size: 48px; letter-spacing: 4px; margin-bottom: 30px; margin-top: 40px; }
+        .content h1:first-child { margin-top: 0; }
+        .content h2 { font-size: 32px; letter-spacing: 2px; margin-bottom: 20px; margin-top: 40px; }
+        .content h3 { font-size: 24px; letter-spacing: 1px; margin-bottom: 15px; margin-top: 30px; }
+        .content p { margin-bottom: 20px; }
+        .content ul, .content ol { margin-bottom: 20px; margin-left: 30px; }
+        .content li { margin-bottom: 10px; }
+        .content strong { font-weight: bold; }
+        .content em { font-style: italic; }
+        .content code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 3px; }
+        .content pre { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 4px; overflow-x: auto; margin-bottom: 20px; }
+        .content pre code { background: none; padding: 0; }
+        .content blockquote { border-left: 3px solid white; padding-left: 20px; margin: 20px 0; opacity: 0.8; }
+        .content a { color: white; text-decoration: underline; opacity: 0.8; transition: opacity 0.2s; }
+        .content a:hover { opacity: 1; }
+        .content hr { border: none; border-top: 1px solid rgba(255,255,255,0.3); margin: 40px 0; }
+
+        .loading { text-align: center; padding: 40px; opacity: 0.6; }
+        .error { color: #ff6b6b; padding: 40px; }
+
+        .sync-button { position: fixed; top: 20px; right: 20px; z-index: 1000; background: none; border: none; color: white; font-family: 'Fira Mono', monospace; font-size: 18px; cursor: pointer; letter-spacing: 2px; transition: opacity 0.2s; }
+        .sync-button:hover { opacity: 0.6; }
+        .sync-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 20000; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.5s; }
+        .sync-popup.visible { opacity: 1; }
+        .sync-popup.hidden { opacity: 0; }
+        .sync-image-container { max-width: 90vw; max-height: 90vh; display: flex; align-items: center; justify-content: center; }
+        .sync-image-container img { max-width: 100%; max-height: 100%; width: auto; height: auto; display: block; }
+        .sync-timer { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: white; font-family: 'Fira Mono', monospace; font-size: 12px; opacity: 0.6; z-index: 20001; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <button class="sync-button">SYNC</button>
+    <a href="index.html" class="logo"><img src="assets/Polygon_8_sided.png" alt="Celadoor"></a>
+    <div class="page-content">
+        <div class="white-line"></div>
+        <div class="content-container">
+            <div class="content" id="content"><div class="loading">Loading content...</div></div>
+        </div>
+    </div>
+    <script>
+        function parseMarkdown(md) {
+            let h = md;
+            h = h.replace(/```([^\n]*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            h = h.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            h = h.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+            h = h.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            h = h.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+            h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            h = h.replace(/^---$/gm, '<hr>');
+            h = h.replace(/^\* (.+)$/gm, '<li>$1</li>');
+            h = h.replace(/^- (.+)$/gm, '<li>$1</li>');
+            h = h.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+            h = h.replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>');
+            h = h.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+            const lines = h.split('\n\n');
+            h = lines.map(l => {
+                l = l.trim();
+                if (l.startsWith('<') && l.endsWith('>') || l === '') return l;
+                return '<p>' + l.replace(/\n/g, '<br>') + '</p>';
+            }).join('\n');
+            return h;
+        }
+        async function loadContent() {
+            const c = document.getElementById('content');
+            try {
+                const r = await fetch('content/notes.md');
+                if (!r.ok) throw new Error('Not found');
+                c.innerHTML = parseMarkdown(await r.text());
+            } catch (e) {
+                c.innerHTML = '<div class="error"><h1>Content Not Found</h1><p>Create: <code>content/notes.md</code></p></div>';
+            }
+        }
+        let syncPopup=null,syncTimer=null;
+        function openSyncPopup(){if(syncPopup)closeSyncPopup();const i=Math.floor(Math.random()*10)+1,url=`images/sync/sync_${String(i).padStart(3,'0')}.AVIF`,p=document.createElement('div');p.className='sync-popup';const c=document.createElement('div');c.className='sync-image-container';const img=document.createElement('img');img.src=url;const t=document.createElement('div');t.className='sync-timer';t.textContent='Click to close';img.onerror=()=>{c.innerHTML='<div style="color:white;text-align:center;padding:40px;"><div style="font-size:48px;">⚠</div><div>SYNC IMAGE NOT FOUND</div></div>';};c.appendChild(img);p.appendChild(c);p.appendChild(t);p.onclick=()=>closeSyncPopup();document.body.appendChild(p);syncPopup=p;requestAnimationFrame(()=>p.classList.add('visible'));syncTimer=setTimeout(()=>closeSyncPopup(),10000);}
+        function closeSyncPopup(){if(!syncPopup)return;if(syncTimer)clearTimeout(syncTimer);syncPopup.classList.remove('visible');syncPopup.classList.add('hidden');setTimeout(()=>{if(syncPopup&&syncPopup.parentNode)syncPopup.parentNode.removeChild(syncPopup);syncPopup=null;},500);}
+        document.addEventListener('DOMContentLoaded',()=>{loadContent();const btn=document.querySelector('.sync-button');if(btn)btn.addEventListener('click',openSyncPopup);});
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'&&syncPopup)closeSyncPopup();});
+    </script>
+</body>
+</html>
