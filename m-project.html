@@ -300,43 +300,115 @@
     </div>
 
     <script>
+        // Complete image manifest - from your provided list
+        const IMAGE_MANIFEST = {
+            'interlocutor': [
+                'image001_interlocutor_23.avif',
+                'image002_interlocutor_1.avif', 
+                'image003_interlocutor_2.avif',
+                'image004_interlocutor_3.avif',
+                'image005_interlocutor_4.avif',
+                'image006_interlocutor_5.avif',
+                'image007_interlocutor_6.avif',
+                'image008_interlocutor_7.avif',
+                'image009_interlocutor_8.avif',
+                'image010_interlocutor_9.avif',
+                'image011_interlocutor_10.avif',
+                'image012_interlocutor_11.avif',
+                'image013_interlocutor_12.avif',
+                'image014_interlocutor_13.avif',
+                'image015_interlocutor_14.avif',
+                'image016_interlocutor_15.avif',
+                'image017_interlocutor_16.avif',
+                'image018_interlocutor_17.avif',
+                'image019_interlocutor_18.avif',
+                'image020_interlocutor_19.avif',
+                'image021_interlocutor_20.avif',
+                'image022_interlocutor_21.avif',
+                'image023_interlocutor_22.avif'
+            ],
+            'costanza': [
+                'image001_costanza_0.avif',
+                'image002_costanza_2.avif',
+                'image003_costanza_3.avif',
+                'image004_costanza_4.avif',
+                'image005_costanza_1.avif'
+            ],
+            'nucleation': [
+                'image001_nucleation_24.avif',
+                'image002_nucleation_1.avif',
+                'image003_nucleation_2.avif',
+                'image004_nucleation_3.avif',
+                'image005_nucleation_4.avif',
+                'image006_nucleation_5.avif',
+                'image007_nucleation_6.avif',
+                'image008_nucleation_7.avif',
+                'image009_nucleation_9.avif',
+                'image010_nucleation_9.avif',
+                'image011_nucleation_10.avif',
+                'image012_nucleation_11.avif',
+                'image013_nucleation_12.avif',
+                'image014_nucleation_13.avif',
+                'image015_nucleation_14.avif',
+                'image016_nucleation_15.avif',
+                'image017_nucleation_16.avif',
+                'image018_nucleation_17.avif',
+                'image019_nucleation_18.avif',
+                'image020_nucleation_19.avif',
+                'image021_nucleation_20.avif',
+                'image022_nucleation_21.avif',
+                'image023_nucleation_22.avif'
+            ],
+            'decay_poster': [
+                'image001_decay_poster.avif'
+            ],
+            'the_last_frame_of_the_day': [
+                'image001_the_last_frame_of_the_day.AVIF'
+            ],
+            'panorama': [
+                'image001_IMG_5532.avif',
+                'image002_IMG_5598.avif',
+                'image003_IMG_5601.avif',
+                'image004_IMG_5627.avif',
+                'image005_IMG_5638.avif',
+                'image006_IMG_5661.avif',
+                'image007_IMG_5662.avif',
+                'image008_IMG_5680.avif',
+                'image009_IMG_5685.avif'
+            ]
+        };
+
         // Project configurations
         const PROJECT_CONFIGS = {
             'interlocutor': {
                 title: 'INTERLOCUTOR',
                 description: 'Generative exploration of communication barriers',
-                folder: 'interlocutor',
-                images: ['image001_interlocutor.AVIF', 'image002_interlocutor.AVIF']
+                folder: 'interlocutor'
             },
             'costanza': {
                 title: 'COSTANZA',
                 description: 'Patterns of constancy in digital flux',
-                folder: 'costanza',
-                images: ['image001_costanza.AVIF', 'image002_costanza.AVIF']
+                folder: 'costanza'
             },
             'nucleation': {
                 title: 'NUCLEATION',
                 description: 'Crystal formation in computational space',
-                folder: 'nucleation',
-                images: ['image001_nucleation.AVIF', 'image002_nucleation.AVIF']
+                folder: 'nucleation'
             },
             'decay_poster': {
                 title: 'DECAY POSTER',
                 description: 'Visual entropy and degradation',
-                folder: 'decay_poster',
-                images: ['image001_decay_poster.AVIF']
+                folder: 'decay_poster'
             },
             'the_last_frame_of_the_day': {
                 title: 'THE LAST FRAME OF THE DAY',
                 description: 'Extended temporal capture',
-                folder: 'the_last_frame_of_the_day',
-                images: ['image001_the_last_frame_of_the_day.AVIF']
+                folder: 'the_last_frame_of_the_day'
             },
             'panorama': {
                 title: 'PANORAMA',
                 description: 'Wide-format generative landscapes',
-                folder: 'panorama',
-                images: ['image001_panorama.AVIF', 'image002_panorama.AVIF']
+                folder: 'panorama'
             }
         };
 
@@ -406,17 +478,22 @@
                 console.log('No statement found for project');
             }
 
-            // Load images
+            // Load images from manifest
             loadProjectImages();
         }
 
-        // Load project images
+        // Load project images from manifest
         function loadProjectImages() {
             const container = document.getElementById('imagesContainer');
             container.innerHTML = '';
 
-            projectImages = currentProject.images;
-            const basePath = `images/projects/${currentProject.folder}/`;
+            // Get images from manifest
+            projectImages = IMAGE_MANIFEST[currentProject.folder] || [];
+            
+            if (projectImages.length === 0) {
+                container.innerHTML = '<div class="error-message">No images found for this project</div>';
+                return;
+            }
 
             projectImages.forEach((filename, index) => {
                 const item = document.createElement('div');
@@ -432,8 +509,12 @@
                 
                 const info = document.createElement('div');
                 info.className = 'image-info';
+                // Extract just the image number from filename
+                const match = filename.match(/image(\d{3})/);
+                const displayName = match ? `image${match[1]}` : filename.replace(/\.(avif|AVIF)$/, '');
+                
                 info.innerHTML = `
-                    <span class="image-filename">${filename}</span>
+                    <span class="image-filename">${displayName}</span>
                     <span class="image-index">${index + 1}/${projectImages.length}</span>
                 `;
 
@@ -448,10 +529,16 @@
                 };
 
                 img.onerror = function() {
-                    loadingDiv.textContent = 'Failed to load';
-                    loadingDiv.style.color = '#f44';
+                    // Try uppercase .AVIF if lowercase fails
+                    if (filename.endsWith('.avif')) {
+                        this.src = `images/projects/${currentProject.folder}/${filename.replace('.avif', '.AVIF')}`;
+                    } else {
+                        loadingDiv.textContent = 'Failed to load';
+                        loadingDiv.style.color = '#f44';
+                    }
                 };
 
+                const basePath = `images/projects/${currentProject.folder}/`;
                 img.src = basePath + filename;
 
                 // Click to view fullscreen
